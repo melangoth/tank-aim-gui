@@ -9,7 +9,7 @@ public class Runner {
         SwingUtilities.invokeLater(new Win());
     }
 
-    // todo make full-repaint
+    // todo implement sprite animation
     // todo add image-backed canvas
     // todo add paint-time monitor
     // todo add menu system

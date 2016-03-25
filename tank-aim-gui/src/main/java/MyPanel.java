@@ -21,33 +21,41 @@ class MyPanel extends JPanel {
     public static final int MLINE_1_HEIGHT = 20;
     public static final int MLINE_1_PADDING = 2;
 
-    // red square
-    private int squareX = 50;
-    private int squareY = 50;
-    private int squareW = 20;
-    private int squareH = 20;
+    // sprites
+    Tank yellowTank = new Tank(Color.YELLOW);
 
     public MyPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                moveSquare(e.getX(), e.getY());
+                moveTank(yellowTank, e.getX(), e.getY());
             }
         });
 
         addMouseMotionListener(new MouseAdapter() {
             public void mouseDragged(MouseEvent e) {
-                moveSquare(e.getX(), e.getY());
+                moveTank(yellowTank, e.getX(), e.getY());
             }
         });
     }
 
-    private void moveSquare(int x, int y) {
+    private void moveTank(Tank tank, int x, int y) {
         // repaint only if moved
-        if ((squareX != x) || (squareY != y)) {
-            squareX = Math.min(Math.max(x, INTERACT_MARGIN_LEFT), this.getWidth() - INTERACT_MARGIN_RIGHT - squareW);
-            squareY = Math.min(Math.max(y, INTERACT_MARGIN_TOP), this.getHeight() - INTERACT_MARGIN_BOTTOM - squareH);
+        if ((tank.getX() != x) || (tank.getY() != y)) {
+            int xx = Math.min(
+                    this.getWidth() - INTERACT_MARGIN_RIGHT - tank.getWidth(),
+                    x
+            );
+            xx = Math.max(INTERACT_MARGIN_LEFT, xx);
+            tank.setX(xx);
+
+            int yy = Math.min(
+                    this.getHeight() - INTERACT_MARGIN_BOTTOM - tank.getHeight(),
+                    y
+            );
+            yy = Math.max(INTERACT_MARGIN_TOP, yy);
+            tank.setY(yy);
 
             repaint();
         }
@@ -61,15 +69,12 @@ class MyPanel extends JPanel {
         super.paintComponent(g);
 
         // Draw Text
-        g.drawString(String.format("@ %d,%d", squareX, squareY),
+        g.drawString(String.format("@ %d,%d", yellowTank.getX(), yellowTank.getY()),
                 MLINE_1_LEFT + MLINE_1_PADDING,
                 MLINE_1_TOP + MLINE_1_HEIGHT - MLINE_BASELINEOFFSET - MLINE_1_PADDING);
         g.drawRect(MLINE_1_LEFT, MLINE_1_TOP, MLINE_1_WIDTH, MLINE_1_HEIGHT);
 
-        // Draw Rect
-        g.setColor(Color.YELLOW);
-        g.fillRect(squareX, squareY, squareW, squareH);
-        g.setColor(Color.BLACK);
-        g.drawRect(squareX, squareY, squareW, squareH);
+        // Draw Yellow Tank
+        yellowTank.paintSprite(g);
     }
 }
