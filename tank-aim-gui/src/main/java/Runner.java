@@ -8,4 +8,10 @@ public class Runner {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Win());
     }
+
+    // todo add paint-time monitor
+    // todo add menu system
+    // todo add fixed tanks
+    // todo try physics
+    // todo later reimplement partial repaint, if performance requires
 }
