@@ -10,7 +10,6 @@ public class Runner {
     }
 
     // todo add paint-time monitor
-    // todo add menu system
     // todo add fixed tanks
     // todo try physics
     // todo later reimplement partial repaint, if performance requires

@@ -20,13 +20,18 @@ class MyPanel extends JPanel {
     // sprites
     Tank yellowTank = new Tank(Color.YELLOW);
     MonitorLine posMonitor = new MonitorLine(new Rectangle(10, 10, 100, 20), 2, MLINE_BASELINEOFFSET);
+    MonitorLine analizeButton = new MonitorLine(new Rectangle(120, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Analize");
 
     public MyPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                moveTank(yellowTank, e.getX(), e.getY());
+                if (analizeButton.inside(e.getX(), e.getY())) {
+
+                } else {
+                    moveTank(yellowTank, e.getX(), e.getY());
+                }
             }
         });
 
@@ -71,6 +76,9 @@ class MyPanel extends JPanel {
         // Draw monitor line 1
         posMonitor.setText(String.format("@ %d,%d", yellowTank.getX(), yellowTank.getY()));
         posMonitor.paintSprite(g);
+
+        // Draw Analize button
+        analizeButton.paintSprite(g);
 
         // Draw Yellow Tank
         yellowTank.paintSprite(g);

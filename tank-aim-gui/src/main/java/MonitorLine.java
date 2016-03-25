@@ -15,6 +15,13 @@ public class MonitorLine {
         this.baseline = baseline;
     }
 
+    public MonitorLine(Rectangle rect, int padding, int baseline, String text) {
+        this.rect = rect;
+        this.padding = padding;
+        this.baseline = baseline;
+        this.text = text;
+    }
+
     public int getX() {
         return rect.getBounds().x;
     }
@@ -41,5 +48,13 @@ public class MonitorLine {
                 getX() + padding,
                 getY() + getHeight() - baseline - padding);
         g.drawRect(getX(), getY(), getWidth(), getHeight());
+    }
+
+    public boolean inside(int x, int y) {
+        if (x >= getX() && x <= getX() + getWidth() && y >= getY() && y <= getY() + getHeight()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
