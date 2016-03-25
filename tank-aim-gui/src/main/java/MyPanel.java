@@ -17,15 +17,9 @@ class MyPanel extends JPanel {
     public static final int INTERACT_MARGIN_LEFT = 5;
     public static final int INTERACT_MARGIN_RIGHT = 5;
 
-    // monitor line 1
-    public static final int MLINE_1_LEFT = 10;
-    public static final int MLINE_1_TOP = 10;
-    public static final int MLINE_1_WIDTH = 100;
-    public static final int MLINE_1_HEIGHT = 20;
-    public static final int MLINE_1_PADDING = 2;
-
     // sprites
     Tank yellowTank = new Tank(Color.YELLOW);
+    MonitorLine posMonitor = new MonitorLine(new Rectangle(10, 10, 100, 20), 2, MLINE_BASELINEOFFSET);
 
     public MyPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
@@ -75,18 +69,11 @@ class MyPanel extends JPanel {
         drawBackground(g);
 
         // Draw monitor line 1
-        drawMonitorLine(g);
+        posMonitor.setText(String.format("@ %d,%d", yellowTank.getX(), yellowTank.getY()));
+        posMonitor.paintSprite(g);
 
         // Draw Yellow Tank
         yellowTank.paintSprite(g);
-    }
-
-    private void drawMonitorLine(Graphics g) {
-        g.setColor(Color.WHITE);
-        g.drawString(String.format("@ %d,%d", yellowTank.getX(), yellowTank.getY()),
-                MLINE_1_LEFT + MLINE_1_PADDING,
-                MLINE_1_TOP + MLINE_1_HEIGHT - MLINE_BASELINEOFFSET - MLINE_1_PADDING);
-        g.drawRect(MLINE_1_LEFT, MLINE_1_TOP, MLINE_1_WIDTH, MLINE_1_HEIGHT);
     }
 
     private void drawBackground(Graphics g) {
