@@ -11,12 +11,12 @@ public class Analizer {
     private SearchBlock nextSearchBlock = null;
 
     // searching
-    private int blockx = 10;
-    private int blocky = 10;
+    private int blockx = 0;
+    private int blocky = 0;
     private int blockw = 5;
-    private int blockh = 40;
+    private int blockh = 45;
     private int stepx = blockw;
-    private int stepy = 15;
+    private int stepy = 10;
 
     public Analizer(Image image) {
         this.image = (BufferedImage) image;
@@ -31,7 +31,8 @@ public class Analizer {
         if (searchCounter > SEARCHLIMIT) {
             return false;
         } else {
-            if (image.getWidth() > blockx + blockw && image.getHeight() > blocky + blockh) {
+            if (image.getWidth() >= blockx + blockw && image.getHeight() >= blocky + blockh
+                    && image.getMinX() <= blockx && image.getMinY() <= blocky) {
                 nextSearchBlock = new SearchBlock(blockx, blocky, blockw, blockh);
 
                 boolean isFieldLine = hasFieldLine(nextSearchBlock);
