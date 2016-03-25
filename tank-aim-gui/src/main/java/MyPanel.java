@@ -1,7 +1,10 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by develrage on 2016. 03. 25..
@@ -68,13 +71,32 @@ class MyPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Draw Text
+        // Draw background
+        drawBackground(g);
+
+        // Draw monitor line 1
+        drawMonitorLine(g);
+
+        // Draw Yellow Tank
+        yellowTank.paintSprite(g);
+    }
+
+    private void drawMonitorLine(Graphics g) {
+        g.setColor(Color.WHITE);
         g.drawString(String.format("@ %d,%d", yellowTank.getX(), yellowTank.getY()),
                 MLINE_1_LEFT + MLINE_1_PADDING,
                 MLINE_1_TOP + MLINE_1_HEIGHT - MLINE_BASELINEOFFSET - MLINE_1_PADDING);
         g.drawRect(MLINE_1_LEFT, MLINE_1_TOP, MLINE_1_WIDTH, MLINE_1_HEIGHT);
+    }
 
-        // Draw Yellow Tank
-        yellowTank.paintSprite(g);
+    private void drawBackground(Graphics g) {
+        File f = new File("images/img2.png");
+        Image bgimage = null;
+        try {
+            bgimage = ImageIO.read(f);
+            g.drawImage(bgimage, 0, 0, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
