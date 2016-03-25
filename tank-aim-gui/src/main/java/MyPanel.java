@@ -7,11 +7,15 @@ import java.awt.event.MouseEvent;
  * Created by develrage on 2016. 03. 25..
  */
 class MyPanel extends JPanel {
+    // global
+    public static final int MLINE_BASELINEOFFSET = 3;
+
     // monitor line 1
     public static final int MLINE_1_LEFT = 10;
-    public static final int MLINE_1_BOTTOM = 20;
+    public static final int MLINE_1_TOP = 10;
     public static final int MLINE_1_WIDTH = 100;
-    public static final int MLINE_1_HEIGHT = 15;
+    public static final int MLINE_1_HEIGHT = 20;
+    public static final int MLINE_1_PADDING = 2;
 
     // red square
     private int squareX = 50;
@@ -36,22 +40,14 @@ class MyPanel extends JPanel {
     }
 
     private void moveSquare(int x, int y) {
-        System.out.println("Moving square.");
         int OFFSET = 1;
 
         // repaint only if moved
         if ((squareX != x) || (squareY != y)) {
-
-            // repaint monitor area
-            repaint(MLINE_1_LEFT, MLINE_1_BOTTOM - MLINE_1_HEIGHT, MLINE_1_WIDTH, MLINE_1_HEIGHT);
-
-            // repaint old position area
-            repaint(squareX, squareY, squareW + OFFSET, squareH + OFFSET);
             squareX = x;
             squareY = y;
 
-            // repaint new position area
-            repaint(squareX, squareY, squareW + OFFSET, squareH + OFFSET);
+            repaint();
         }
     }
 
@@ -60,14 +56,16 @@ class MyPanel extends JPanel {
     }
 
     public void paintComponent(Graphics g) {
-        System.out.println("Painting component.");
         super.paintComponent(g);
 
         // Draw Text
-        g.drawString(String.format("@ %d,%d", squareX, squareY), MLINE_1_LEFT, MLINE_1_BOTTOM);
+        g.drawString(String.format("@ %d,%d", squareX, squareY),
+                MLINE_1_LEFT + MLINE_1_PADDING,
+                MLINE_1_TOP + MLINE_1_HEIGHT - MLINE_BASELINEOFFSET - MLINE_1_PADDING);
+        g.drawRect(MLINE_1_LEFT, MLINE_1_TOP, MLINE_1_WIDTH, MLINE_1_HEIGHT);
 
         // Draw Rect
-        g.setColor(Color.RED);
+        g.setColor(Color.YELLOW);
         g.fillRect(squareX, squareY, squareW, squareH);
         g.setColor(Color.BLACK);
         g.drawRect(squareX, squareY, squareW, squareH);
