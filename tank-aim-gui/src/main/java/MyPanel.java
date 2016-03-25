@@ -9,6 +9,10 @@ import java.awt.event.MouseEvent;
 class MyPanel extends JPanel {
     // global
     public static final int MLINE_BASELINEOFFSET = 3;
+    public static final int INTERACT_MARGIN_TOP = 40;
+    public static final int INTERACT_MARGIN_BOTTOM = 5;
+    public static final int INTERACT_MARGIN_LEFT = 5;
+    public static final int INTERACT_MARGIN_RIGHT = 5;
 
     // monitor line 1
     public static final int MLINE_1_LEFT = 10;
@@ -40,19 +44,17 @@ class MyPanel extends JPanel {
     }
 
     private void moveSquare(int x, int y) {
-        int OFFSET = 1;
-
         // repaint only if moved
         if ((squareX != x) || (squareY != y)) {
-            squareX = x;
-            squareY = y;
+            squareX = Math.min(Math.max(x, INTERACT_MARGIN_LEFT), this.getWidth() - INTERACT_MARGIN_RIGHT - squareW);
+            squareY = Math.min(Math.max(y, INTERACT_MARGIN_TOP), this.getHeight() - INTERACT_MARGIN_BOTTOM - squareH);
 
             repaint();
         }
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(250, 200);
+        return new Dimension(480, 320);
     }
 
     public void paintComponent(Graphics g) {
