@@ -10,9 +10,10 @@ public class Runner {
     }
 
     // todo move and handle block list inside analizer, return only relevant block list to the gui
-    // todo find tanks in filed blocks
-    // todo add paint-time monitor
-    // todo add fixed tanks
+    // todo find tanks in field blocks
+    // todo add support for manual tank location
+    // todo implement realtime screen capturing
+    // todo monitor tanks relative to their last known place
     // todo try physics
     // todo later reimplement partial repaint, if performance requires
 }
