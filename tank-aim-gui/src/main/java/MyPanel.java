@@ -6,7 +6,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by develrage on 2016. 03. 25..
@@ -45,7 +44,7 @@ class MyPanel extends JPanel {
             }
         });
 
-        File f = new File("images/img2.png");
+        File f = new File("images/img4.png");
         try {
             analImage = ImageIO.read(f);
         } catch (IOException e) {
@@ -98,7 +97,7 @@ class MyPanel extends JPanel {
     }
 
     public void paintComponent(Graphics g) {
-        System.out.println("Painting Component..." + (new Date()).getTime());
+//        System.out.println("Painting Component..." + (new Date()).getTime());
         super.paintComponent(g);
 
         // Draw background

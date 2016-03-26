@@ -5,19 +5,11 @@ import java.awt.*;
  */
 public class SearchBlock {
     private Rectangle rect;
-    private boolean topIsAir;
-    private boolean bottomIsGround;
-
-    public SearchBlock(Rectangle rect) {
-        this.rect = rect;
-    }
+    private Color topColor;
+    private Color bottomColor;
 
     public SearchBlock(int x, int y, int width, int height) {
         this.rect = new Rectangle(x, y, width, height);
-    }
-
-    public Rectangle getRect() {
-        return this.rect;
     }
 
     public int getX() {
@@ -36,19 +28,19 @@ public class SearchBlock {
         return rect.getBounds().height;
     }
 
-    public void setTopIsAir(boolean topIsAir) {
-        this.topIsAir = topIsAir;
+    public Color getBottomColor() {
+        return bottomColor;
     }
 
-    public void setBottomIsGround(boolean bottomIsGround) {
-        this.bottomIsGround = bottomIsGround;
+    public void setBottomColor(Color bottomColor) {
+        this.bottomColor = bottomColor;
     }
 
-    public boolean topIsAir() {
-        return this.topIsAir;
+    public Color getTopColor() {
+        return topColor;
     }
 
-    public boolean bottomIsGround() {
-        return this.bottomIsGround;
+    public void setTopColor(Color topColor) {
+        this.topColor = topColor;
     }
 }

@@ -31,8 +31,20 @@ public class Analizer {
         if (searchCounter > SEARCHLIMIT) {
             return false;
         } else {
-            if (image.getWidth() >= blockx + blockw && image.getHeight() >= blocky + blockh
-                    && image.getMinX() <= blockx && image.getMinY() <= blocky) {
+            // if next block out of top, or bottom
+            if (image.getHeight() < blocky + blockh || image.getMinY() > blocky) {
+                System.out.println("Next block gone out top or bottom");
+                blocky = 0;
+            }
+
+            // if next block is the same as the last
+            if (nextSearchBlock != null && nextSearchBlock.getX() == blockx && nextSearchBlock.getY() == blocky) {
+                System.out.println("Next block is the same as last");
+                blockx += stepx;
+            }
+
+            // if next block is inside right limit
+            if (image.getWidth() >= blockx + blockw) {
                 nextSearchBlock = new SearchBlock(blockx, blocky, blockw, blockh);
 
                 boolean isFieldLine = hasFieldLine(nextSearchBlock);
@@ -40,14 +52,18 @@ public class Analizer {
                 if (isFieldLine) {
                     blockx += stepx;
                 } else {
-                    if (!nextSearchBlock.topIsAir() && nextSearchBlock.bottomIsGround()) {
+                    if (colorIsGround(nextSearchBlock.getTopColor()) && colorIsGround(nextSearchBlock.getBottomColor())) {
                         blocky -= stepy;
-                    } else {
+                    } else if (colorIsSpace(nextSearchBlock.getBottomColor()) && colorIsSpace(nextSearchBlock.getTopColor())) {
                         blocky += stepy;
+                    } else {
+                        System.out.println("next block cant find neither air nor bottom");
+
                     }
                 }
                 return true;
-            } else {
+            } else { // if next block gone out on right limit
+                System.out.println("next block gone aout on right");
                 nextSearchBlock = null;
                 return false;
             }
@@ -92,12 +108,17 @@ public class Analizer {
 
         System.out.println(String.format("Search #%d; Top RGB avg: %d,%d,%d; Bottom RGB avg: %d,%d,%d,", searchCounter, topR, topG, topB, bottomR, bottomG, bottomB));
 
-        boolean topIsAir = (topR < 50 && topG < 50 && topB < 60);
-        boolean bottomIsGround = (bottomR < 100 && bottomG < 160 && bottomB > 130);
+        block.setTopColor(new Color(topR, topG, topB));
+        block.setBottomColor(new Color(bottomR, bottomG, bottomB));
 
-        block.setTopIsAir(topIsAir);
-        block.setBottomIsGround(bottomIsGround);
+        return (colorIsSpace(block.getTopColor()) && colorIsGround(block.getBottomColor()));
+    }
 
-        return (topIsAir && bottomIsGround);
+    private boolean colorIsSpace(Color color) {
+        return (color.getRed() < 50 && color.getGreen() < 50 && color.getBlue() < 60);
+    }
+
+    private boolean colorIsGround(Color color) {
+        return (color.getRed() < 100 && color.getGreen() < 160 && color.getBlue() > 130);
     }
 }
