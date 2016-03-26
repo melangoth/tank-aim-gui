@@ -44,7 +44,7 @@ class MyPanel extends JPanel {
             }
         });
 
-        File f = new File("images/img4.png");
+        File f = new File("images/img5.png");
         try {
             analImage = ImageIO.read(f);
         } catch (IOException e) {
@@ -93,7 +93,7 @@ class MyPanel extends JPanel {
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(480, 320);
+        return new Dimension(800, 540);
     }
 
     public void paintComponent(Graphics g) {
