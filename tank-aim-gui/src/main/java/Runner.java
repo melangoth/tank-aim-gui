@@ -9,6 +9,8 @@ public class Runner {
         SwingUtilities.invokeLater(new Win());
     }
 
+    // todo move and handle block list inside analizer, return only relevant block list to the gui
+    // todo find tanks in filed blocks
     // todo add paint-time monitor
     // todo add fixed tanks
     // todo try physics

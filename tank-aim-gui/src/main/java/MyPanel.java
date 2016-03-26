@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by develrage on 2016. 03. 25..
@@ -20,10 +21,11 @@ class MyPanel extends JPanel {
     // sprites
     Tank yellowTank = new Tank(Color.YELLOW);
     MonitorLine posMonitor = new MonitorLine(new Rectangle(10, 10, 100, 20), 2, MLINE_BASELINEOFFSET);
-    MonitorLine analizeButton = new MonitorLine(new Rectangle(120, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Analize");
+    MonitorLine analizeButton = new MonitorLine(new Rectangle(120, 10, 100, 20), 2, MLINE_BASELINEOFFSET, "Analize");
     // analizing
     private Image analImage = null;
     private ArrayList<SearchBlock> searchBlocks = new ArrayList<SearchBlock>();
+    private int lastAnalTime = -1;
 
     public MyPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
@@ -53,14 +55,18 @@ class MyPanel extends JPanel {
     }
 
     private void analizeImage() {
+        Date start = new Date();
+
         Analizer anal = new Analizer(analImage);
         while (anal.hasSearchBlock()) {
 //            sleepSome(500);
             SearchBlock block = anal.nextSearchBlock();
             searchBlocks.add(block);
-
-            repaint();
         }
+
+        int end = (new Date()).compareTo(start);
+        analizeButton.setText(String.format("Analize (%d)", end));
+        repaint();
     }
 
     private void sleepSome(int i) {

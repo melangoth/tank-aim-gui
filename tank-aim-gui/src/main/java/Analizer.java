@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
  * Created by develrage on 2016. 03. 25..
  */
 public class Analizer {
-    private final static int SEARCHLIMIT = 300;
+    private final static int SEARCHLIMIT = 500;
     BufferedImage image;
     private int searchCounter = 0;
     private SearchBlock nextSearchBlock = null;
