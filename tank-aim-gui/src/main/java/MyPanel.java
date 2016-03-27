@@ -149,6 +149,11 @@ class MyPanel extends JPanel {
         // Draw Tanks
         greenTank.paintSprite(g);
         redTank.paintSprite(g);
+
+        // Draw tanks distance
+        g.setColor(Color.YELLOW);
+        g.drawLine(greenTank.getCenterX(), greenTank.getCenterY(), redTank.getCenterX(), greenTank.getCenterY());
+        g.drawString(String.format("~ %d", Math.abs(greenTank.getCenterX() - redTank.getCenterX())), greenTank.getCenterX(), greenTank.getCenterY() + 30);
     }
 
     private void drawBackground(Graphics g) {
