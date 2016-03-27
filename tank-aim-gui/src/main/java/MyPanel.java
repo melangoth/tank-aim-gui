@@ -24,6 +24,8 @@ class MyPanel extends JPanel {
     MonitorLine posMonitor = new MonitorLine(new Rectangle(10, 10, 75, 20), 2, MLINE_BASELINEOFFSET);
     MonitorLine analizeButton = new MonitorLine(new Rectangle(95, 10, 75, 20), 2, MLINE_BASELINEOFFSET, "Analize");
     MonitorLine tankSwitch = new MonitorLine(new Rectangle(180, 10, 50, 20), 2, MLINE_BASELINEOFFSET);
+    MonitorLine straightShot = new MonitorLine(new Rectangle(240, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Straight");
+    MonitorLine ballisticShot = new MonitorLine(new Rectangle(300, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Ballistic");
     // analizing
     private Image analImage = null;
     private ArrayList<SearchBlock> searchBlocks = new ArrayList<SearchBlock>();
@@ -50,6 +52,10 @@ class MyPanel extends JPanel {
                         tankSwitch.setText("Green");
                     }
                     repaint();
+                } else if (straightShot.inside(e.getX(), e.getY())) {
+                    simulateStraightShot();
+                } else if (ballisticShot.inside(e.getX(), e.getY())) {
+                    simulateBallisticShot();
                 } else {
                     moveTank(activeTank, e.getX(), e.getY());
                 }
@@ -147,6 +153,8 @@ class MyPanel extends JPanel {
         // Draw buttons
         analizeButton.paintSprite(g);
         tankSwitch.paintSprite(g);
+        straightShot.paintSprite(g);
+        ballisticShot.paintSprite(g);
 
         // Draw Tanks
         greenTank.paintSprite(g);
@@ -175,13 +183,47 @@ class MyPanel extends JPanel {
 
         int shotSize = 6;
         shotBlocks = new ArrayList<int[]>();
-        for (int x = 0; x <= paints + 1; x++) {
-            int y = greenTank.getCenterY();
+        for (int p = 0; p <= paints + 1; p++) {
+            int x = v * p;
+            int y = 0;
             shotBlocks.add(new int[]{
-                    x * v + greenTank.getCenterX() - shotSize / 2,
-                    y - shotSize / 2,
+                    x + greenTank.getCenterX() - shotSize / 2,
+                    y + greenTank.getCenterY() - shotSize / 2,
                     shotSize, shotSize});
         }
         repaint();
+    }
+
+    private void simulateBallisticShot() {
+        int s = redTank.getCenterX() - greenTank.getCenterX();
+        int v = 50;
+        int g = 10;
+        int a = 45;
+        int px = 1; // px/paint
+        int paints = Math.abs(s);
+
+        int shotSize = 2;
+        shotBlocks = new ArrayList<int[]>();
+        for (int p = 0; p <= paints + 1; p++) {
+            double x = px * p;
+            double y = x * tan(a) - g / (2 * p(v, 2) * p(cos(a), 2)) * p(x, 2);
+            shotBlocks.add(new int[]{
+                    (int) x + greenTank.getCenterX(),
+                    (int) y * -1 + greenTank.getCenterY(),
+                    shotSize, shotSize});
+        }
+        repaint();
+    }
+
+    private double p(double base, double power) {
+        return Math.pow(base, power);
+    }
+
+    private double cos(double alpha) {
+        return Math.cos(alpha);
+    }
+
+    private double tan(double alpha) {
+        return Math.tan(alpha);
     }
 }
