@@ -14,6 +14,25 @@ class Tank {
         this.color = color;
     }
 
+    public Tank(Color color, int x, int y) {
+        this.color = color;
+        this.xPos = x;
+        this.yPos = y;
+    }
+
+    public int getCenterX() {
+        return xPos + width / 2;
+    }
+
+    public int getCenterY() {
+        return yPos + height / 2;
+    }
+
+    public void setCenter(int x, int y) {
+        xPos = x - width / 2;
+        yPos = y - height / 2;
+    }
+
     public int getX() {
         return xPos;
     }

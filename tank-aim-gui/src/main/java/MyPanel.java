@@ -19,9 +19,10 @@ class MyPanel extends JPanel {
     private static final int INTERACT_MARGIN_LEFT = 5;
     private static final int INTERACT_MARGIN_RIGHT = 5;
     // sprites
-    Tank yellowTank = new Tank(Color.YELLOW);
-    MonitorLine posMonitor = new MonitorLine(new Rectangle(10, 10, 100, 20), 2, MLINE_BASELINEOFFSET);
-    MonitorLine analizeButton = new MonitorLine(new Rectangle(120, 10, 100, 20), 2, MLINE_BASELINEOFFSET, "Analize");
+    Tank greenTank = new Tank(Color.GREEN, 50, 50);
+    Tank redTank = new Tank(Color.RED, 80, 50);
+    MonitorLine posMonitor = new MonitorLine(new Rectangle(10, 10, 75, 20), 2, MLINE_BASELINEOFFSET);
+    MonitorLine analizeButton = new MonitorLine(new Rectangle(95, 10, 75, 20), 2, MLINE_BASELINEOFFSET, "Analize");
     // analizing
     private Image analImage = null;
     private ArrayList<SearchBlock> searchBlocks = new ArrayList<SearchBlock>();
@@ -35,18 +36,18 @@ class MyPanel extends JPanel {
                 if (analizeButton.inside(e.getX(), e.getY())) {
                     analizeImage();
                 } else {
-                    moveTank(yellowTank, e.getX(), e.getY());
+                    moveTank(greenTank, e.getX(), e.getY());
                 }
             }
         });
 
         addMouseMotionListener(new MouseAdapter() {
             public void mouseDragged(MouseEvent e) {
-                moveTank(yellowTank, e.getX(), e.getY());
+                moveTank(greenTank, e.getX(), e.getY());
             }
         });
 
-        File f = new File("images/img5.png");
+        File f = new File("images/img1.png");
         try {
             analImage = ImageIO.read(f);
         } catch (IOException e) {
@@ -79,20 +80,24 @@ class MyPanel extends JPanel {
 
     private void moveTank(Tank tank, int x, int y) {
         // repaint only if moved
-        if ((tank.getX() != x) || (tank.getY() != y)) {
+        if ((tank.getCenterX() != x) || (tank.getCenterY() != y)) {
+            // limit right
             int xx = Math.min(
-                    this.getWidth() - INTERACT_MARGIN_RIGHT - tank.getWidth(),
+                    this.getWidth() - INTERACT_MARGIN_RIGHT - tank.getWidth() / 2,
                     x
             );
-            xx = Math.max(INTERACT_MARGIN_LEFT, xx);
-            tank.setX(xx);
+            // limit left
+            xx = Math.max(INTERACT_MARGIN_LEFT + tank.getWidth() / 2, xx);
 
+            // limit bottom
             int yy = Math.min(
-                    this.getHeight() - INTERACT_MARGIN_BOTTOM - tank.getHeight(),
+                    this.getHeight() - INTERACT_MARGIN_BOTTOM - tank.getHeight() / 2,
                     y
             );
-            yy = Math.max(INTERACT_MARGIN_TOP, yy);
-            tank.setY(yy);
+            // limit top
+            yy = Math.max(INTERACT_MARGIN_TOP + tank.getHeight() / 2, yy);
+
+            tank.setCenter(xx, yy);
 
             repaint();
         }
@@ -116,14 +121,15 @@ class MyPanel extends JPanel {
         }
 
         // Draw monitor line 1
-        posMonitor.setText(String.format("@ %d,%d", yellowTank.getX(), yellowTank.getY()));
+        posMonitor.setText(String.format("@ %d,%d", greenTank.getX(), greenTank.getY()));
         posMonitor.paintSprite(g);
 
         // Draw Analize button
         analizeButton.paintSprite(g);
 
-        // Draw Yellow Tank
-        yellowTank.paintSprite(g);
+        // Draw Tanks
+        greenTank.paintSprite(g);
+        redTank.paintSprite(g);
     }
 
     private void drawBackground(Graphics g) {
