@@ -19,8 +19,8 @@ class MyPanel extends JPanel {
     private static final int INTERACT_MARGIN_LEFT = 5;
     private static final int INTERACT_MARGIN_RIGHT = 5;
     // sprites
-    Tank greenTank = new Tank(Color.GREEN, 50, 50);
-    Tank redTank = new Tank(Color.RED, 80, 50);
+    Tank greenTank = new Tank(Color.GREEN, 118, 286);
+    Tank redTank = new Tank(Color.RED, 658, 286);
     MonitorLine posMonitor = new MonitorLine(new Rectangle(10, 10, 75, 20), 2, MLINE_BASELINEOFFSET);
     MonitorLine analizeButton = new MonitorLine(new Rectangle(95, 10, 75, 20), 2, MLINE_BASELINEOFFSET, "Analize");
     MonitorLine tankSwitch = new MonitorLine(new Rectangle(180, 10, 50, 20), 2, MLINE_BASELINEOFFSET);
@@ -29,6 +29,7 @@ class MyPanel extends JPanel {
     private ArrayList<SearchBlock> searchBlocks = new ArrayList<SearchBlock>();
     private int lastAnalTime = -1;
     private Tank activeTank;
+    private ArrayList<int[]> shotBlocks = new ArrayList<int[]>();
 
     public MyPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
@@ -36,7 +37,8 @@ class MyPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 if (analizeButton.inside(e.getX(), e.getY())) {
-                    analizeImage();
+                    //analizeImage();
+                    simulateStraightShot();
                 } else if (tankSwitch.inside(e.getX(), e.getY())) {
                     if (activeTank == greenTank) {
                         activeTank = redTank;
@@ -133,8 +135,8 @@ class MyPanel extends JPanel {
         drawBackground(g);
 
         // Draw search blocks
+        g.setColor(Color.MAGENTA);
         for (SearchBlock block : searchBlocks) {
-            g.setColor(Color.MAGENTA);
             g.drawRect(block.getX(), block.getY(), block.getWidth(), block.getHeight());
         }
 
@@ -153,10 +155,33 @@ class MyPanel extends JPanel {
         // Draw tanks distance
         g.setColor(Color.YELLOW);
         g.drawLine(greenTank.getCenterX(), greenTank.getCenterY(), redTank.getCenterX(), greenTank.getCenterY());
-        g.drawString(String.format("~ %d", Math.abs(greenTank.getCenterX() - redTank.getCenterX())), greenTank.getCenterX(), greenTank.getCenterY() + 30);
+        g.drawString(String.format("~ %d", Math.abs(greenTank.getCenterX() - redTank.getCenterX())), greenTank.getCenterX() + 10, greenTank.getCenterY() - 10);
+
+        // Draw shotblocks
+        g.setColor(Color.ORANGE);
+        for (int[] shot : shotBlocks) {
+            g.fillOval(shot[0], shot[1], shot[2], shot[3]);
+        }
     }
 
     private void drawBackground(Graphics g) {
         g.drawImage(analImage, 0, 0, null);
+    }
+
+    private void simulateStraightShot() {
+        int s = redTank.getCenterX() - greenTank.getCenterX(); // px
+        int v = 10; // px/paint
+        int paints = (int) Math.ceil(Math.abs(s) / 10);
+
+        int shotSize = 6;
+        shotBlocks = new ArrayList<int[]>();
+        for (int x = 0; x <= paints + 1; x++) {
+            int y = greenTank.getCenterY();
+            shotBlocks.add(new int[]{
+                    x * v + greenTank.getCenterX() - shotSize / 2,
+                    y - shotSize / 2,
+                    shotSize, shotSize});
+        }
+        repaint();
     }
 }

@@ -58,9 +58,8 @@ class Tank {
     }
 
     public void paintSprite(Graphics g) {
-        //g.setColor(this.color);
-        //g.fillRect(xPos,yPos,width,height);
         g.setColor(this.color);
         g.drawRect(xPos, yPos, width, height);
+        g.drawString(String.format("@ %d,%d", xPos, yPos), xPos, yPos + 20 + height);
     }
 }
