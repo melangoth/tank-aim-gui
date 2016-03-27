@@ -19,19 +19,27 @@ class MyPanel extends JPanel {
     private static final int INTERACT_MARGIN_LEFT = 5;
     private static final int INTERACT_MARGIN_RIGHT = 5;
     // sprites
-    Tank greenTank = new Tank(Color.GREEN, 118, 286);
-    Tank redTank = new Tank(Color.RED, 658, 286);
+    Tank greenTank = new Tank(Color.GREEN, 131, 281);
+    Tank redTank = new Tank(Color.RED, 660, 285);
     MonitorLine posMonitor = new MonitorLine(new Rectangle(10, 10, 75, 20), 2, MLINE_BASELINEOFFSET);
     MonitorLine analizeButton = new MonitorLine(new Rectangle(95, 10, 75, 20), 2, MLINE_BASELINEOFFSET, "Analize");
     MonitorLine tankSwitch = new MonitorLine(new Rectangle(180, 10, 50, 20), 2, MLINE_BASELINEOFFSET);
     MonitorLine straightShot = new MonitorLine(new Rectangle(240, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Straight");
     MonitorLine ballisticShot = new MonitorLine(new Rectangle(300, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Ballistic");
+    MonitorLine decPower = new MonitorLine(new Rectangle(460, 10, 10, 20), 2, MLINE_BASELINEOFFSET, "-");
+    MonitorLine showPower = new MonitorLine(new Rectangle(470, 10, 30, 20), 2, MLINE_BASELINEOFFSET, "");
+    MonitorLine incPower = new MonitorLine(new Rectangle(500, 10, 10, 20), 2, MLINE_BASELINEOFFSET, "+");
+    MonitorLine decAngle = new MonitorLine(new Rectangle(520, 10, 10, 20), 2, MLINE_BASELINEOFFSET, "-");
+    MonitorLine showAngle = new MonitorLine(new Rectangle(530, 10, 30, 20), 2, MLINE_BASELINEOFFSET, "");
+    MonitorLine incAngle = new MonitorLine(new Rectangle(560, 10, 10, 20), 2, MLINE_BASELINEOFFSET, "+");
     // analizing
     private Image analImage = null;
     private ArrayList<SearchBlock> searchBlocks = new ArrayList<SearchBlock>();
     private int lastAnalTime = -1;
     private Tank activeTank;
     private ArrayList<int[]> shotBlocks = new ArrayList<int[]>();
+    private int power = 73;
+    private int angle = 45;
 
     public MyPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
@@ -56,6 +64,18 @@ class MyPanel extends JPanel {
                     simulateStraightShot();
                 } else if (ballisticShot.inside(e.getX(), e.getY())) {
                     simulateBallisticShot();
+                } else if (decPower.inside(e.getX(), e.getY())) {
+                    power--;
+                    simulateBallisticShot();
+                } else if (incPower.inside(e.getX(), e.getY())) {
+                    power++;
+                    simulateBallisticShot();
+                } else if (decAngle.inside(e.getX(), e.getY())) {
+                    angle--;
+                    simulateBallisticShot();
+                } else if (incAngle.inside(e.getX(), e.getY())) {
+                    angle++;
+                    simulateBallisticShot();
                 } else {
                     moveTank(activeTank, e.getX(), e.getY());
                 }
@@ -73,7 +93,7 @@ class MyPanel extends JPanel {
         tankSwitch.setColor(Color.GREEN);
         activeTank = greenTank;
 
-        File f = new File("images/img1.png");
+        File f = new File("images/img6.png");
         try {
             analImage = ImageIO.read(f);
         } catch (IOException e) {
@@ -155,6 +175,14 @@ class MyPanel extends JPanel {
         tankSwitch.paintSprite(g);
         straightShot.paintSprite(g);
         ballisticShot.paintSprite(g);
+        incPower.paintSprite(g);
+        showPower.setText(String.format("%d", power));
+        showPower.paintSprite(g);
+        decPower.paintSprite(g);
+        incAngle.paintSprite(g);
+        showAngle.setText(String.format("%d", angle));
+        showAngle.paintSprite(g);
+        decAngle.paintSprite(g);
 
         // Draw Tanks
         greenTank.paintSprite(g);
@@ -196,10 +224,10 @@ class MyPanel extends JPanel {
 
     private void simulateBallisticShot() {
         int s = redTank.getCenterX() - greenTank.getCenterX();
-        int v = 50;
+        int v = power;
         int g = 10;
-        int a = 45;
-        int px = 1; // px/paint
+        int a = angle;
+        double px = 5; // px/paint
         int paints = Math.abs(s);
 
         int shotSize = 2;
