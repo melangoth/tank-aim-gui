@@ -23,10 +23,12 @@ class MyPanel extends JPanel {
     Tank redTank = new Tank(Color.RED, 80, 50);
     MonitorLine posMonitor = new MonitorLine(new Rectangle(10, 10, 75, 20), 2, MLINE_BASELINEOFFSET);
     MonitorLine analizeButton = new MonitorLine(new Rectangle(95, 10, 75, 20), 2, MLINE_BASELINEOFFSET, "Analize");
+    MonitorLine tankSwitch = new MonitorLine(new Rectangle(180, 10, 50, 20), 2, MLINE_BASELINEOFFSET);
     // analizing
     private Image analImage = null;
     private ArrayList<SearchBlock> searchBlocks = new ArrayList<SearchBlock>();
     private int lastAnalTime = -1;
+    private Tank activeTank;
 
     public MyPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
@@ -35,17 +37,33 @@ class MyPanel extends JPanel {
             public void mousePressed(MouseEvent e) {
                 if (analizeButton.inside(e.getX(), e.getY())) {
                     analizeImage();
+                } else if (tankSwitch.inside(e.getX(), e.getY())) {
+                    if (activeTank == greenTank) {
+                        activeTank = redTank;
+                        tankSwitch.setColor(Color.RED);
+                        tankSwitch.setText("Red");
+                    } else {
+                        activeTank = greenTank;
+                        tankSwitch.setColor(Color.GREEN);
+                        tankSwitch.setText("Green");
+                    }
+                    repaint();
                 } else {
-                    moveTank(greenTank, e.getX(), e.getY());
+                    moveTank(activeTank, e.getX(), e.getY());
                 }
             }
         });
 
         addMouseMotionListener(new MouseAdapter() {
             public void mouseDragged(MouseEvent e) {
-                moveTank(greenTank, e.getX(), e.getY());
+                moveTank(activeTank, e.getX(), e.getY());
             }
         });
+
+        // initialization
+        tankSwitch.setText("Green");
+        tankSwitch.setColor(Color.GREEN);
+        activeTank = greenTank;
 
         File f = new File("images/img1.png");
         try {
@@ -124,8 +142,9 @@ class MyPanel extends JPanel {
         posMonitor.setText(String.format("@ %d,%d", greenTank.getX(), greenTank.getY()));
         posMonitor.paintSprite(g);
 
-        // Draw Analize button
+        // Draw buttons
         analizeButton.paintSprite(g);
+        tankSwitch.paintSprite(g);
 
         // Draw Tanks
         greenTank.paintSprite(g);

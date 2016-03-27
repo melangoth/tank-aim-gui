@@ -8,6 +8,7 @@ public class MonitorLine {
     private final int baseline;
     private Rectangle rect;
     private String text = "";
+    private Color color = Color.WHITE;
 
     public MonitorLine(Rectangle rect, int padding, int baseline) {
         this.rect = rect;
@@ -43,7 +44,7 @@ public class MonitorLine {
     }
 
     public void paintSprite(Graphics g) {
-        g.setColor(Color.WHITE);
+        g.setColor(color);
         g.drawString(text,
                 getX() + padding,
                 getY() + getHeight() - baseline - padding);
@@ -56,5 +57,9 @@ public class MonitorLine {
         } else {
             return false;
         }
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 }
