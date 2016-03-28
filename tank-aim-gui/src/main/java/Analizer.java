@@ -145,7 +145,6 @@ public class Analizer {
             a = 360 - a;
             directionX = -1;
         }
-        System.out.println(String.format("Calculationg angle: %d", a));
 
         // todo: refine shot position and density
         int shotSize = 2;
