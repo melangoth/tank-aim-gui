@@ -37,8 +37,8 @@ class MyPanel extends JPanel {
     private int lastAnalTime = -1;
     private Tank activeTank;
     private ArrayList<int[]> shotBlocks = new ArrayList<int[]>();
-    private int power = 73;
-    private int angle = 45;
+    private int power = 100; //93; //72;
+    private int angle = 154; //32; //45;
 
     public MyPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
@@ -211,14 +211,30 @@ class MyPanel extends JPanel {
         double px = 5; // px/paint
         int paints = Math.abs(s);
 
+        int directionX = 1;
+        int directionY = -1;
+        if (a > 90) {
+            a = 180 - a;
+            directionX = -1;
+            //directionY = 1;
+        }
+
+        // todo: refine shot position and density
         int shotSize = 2;
         shotBlocks = new ArrayList<int[]>();
         for (int p = 0; p <= paints + 1; p++) {
             double x = px * p;
             double y = x * tan(a) - g / (2 * p(v, 2) * p(cos(a), 2)) * p(x, 2);
+
+            int coordX = (int) x * directionX + greenTank.getCenterX();
+            int coordY = (int) y * directionY + greenTank.getCenterY();
+
+            if (coordX < 0) coordX = coordX * -1;
+            if (coordX > this.getWidth()) coordX = this.getWidth() - (coordX - this.getWidth());
+
             shotBlocks.add(new int[]{
-                    (int) x + greenTank.getCenterX(),
-                    (int) y * -1 + greenTank.getCenterY(),
+                    coordX,
+                    coordY,
                     shotSize, shotSize});
         }
         repaint();
