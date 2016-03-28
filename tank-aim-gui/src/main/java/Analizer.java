@@ -1,12 +1,15 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 /**
  * Created by develrage on 2016. 03. 25..
  */
 public class Analizer {
     private final static int SEARCHLIMIT = 500;
-    BufferedImage image;
+    private BufferedImage image;
+    private int fieldWidth;
+    private int fieldHeight;
     private int searchCounter = 0;
     private SearchBlock nextSearchBlock = null;
 
@@ -20,6 +23,8 @@ public class Analizer {
 
     public Analizer(Image image) {
         this.image = (BufferedImage) image;
+        this.fieldWidth = this.image.getWidth();
+        this.fieldHeight = this.image.getHeight();
     }
 
     public SearchBlock nextSearchBlock() {
@@ -120,5 +125,60 @@ public class Analizer {
 
     private boolean colorIsGround(Color color) {
         return (color.getRed() < 100 && color.getGreen() < 160 && color.getBlue() > 130);
+    }
+
+    public ArrayList<int[]> simulateBallisticShot(int angle, int power, int startX, int startY) {
+        ArrayList<int[]> shotBlocks;
+
+        int v = power;
+        double g = 10;
+        int a = angle;
+        double px = 5; // px/paint
+        int paints = 1000;
+
+        int directionX = 1;
+        int directionY = -1;
+        if (a > 90) {
+            a = 180 - a;
+            directionX = -1;
+            //directionY = 1;
+        }
+
+        // todo: refine shot position and density
+        int shotSize = 2;
+        shotBlocks = new ArrayList<int[]>();
+        for (int p = 0; p <= paints + 1; p++) {
+            double x = px * p;
+            double y = x * tan(a) - g / (2 * p(v, 2) * p(cos(a), 2)) * p(x, 2);
+
+            int coordX = (int) x * directionX + startX;
+            int coordY = (int) y * directionY + startY;
+
+            if (coordX < 0) coordX = coordX * -1;
+            if (coordX > fieldWidth) coordX = fieldWidth - (coordX - fieldWidth);
+
+            shotBlocks.add(new int[]{
+                    coordX,
+                    coordY,
+                    shotSize, shotSize});
+        }
+
+        return shotBlocks;
+    }
+
+    private double p(double base, double power) {
+        return Math.pow(base, power);
+    }
+
+    private double cos(double alpha) {
+        return Math.cos(Math.PI / 180 * alpha);
+    }
+
+    private double sin(double alpha) {
+        return Math.sin(Math.PI / 180 * alpha);
+    }
+
+    private double tan(double alpha) {
+        return Math.tan(Math.PI / 180 * alpha);
     }
 }

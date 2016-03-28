@@ -78,18 +78,34 @@ class MyPanel extends JPanel {
                         }
                         repaint();
                     } else if (ballisticShot.inside(e)) {
-                        simulateBallisticShot();
+                        simulateDefaultShot();
                     } else if (decPower.inside(e)) {
-                        power--;
+                        if (power <= 0) {
+                            power = 100;
+                        } else {
+                            power--;
+                        }
                         simulateDefaultShot();
                     } else if (incPower.inside(e)) {
-                        power++;
+                        if (power >= 100) {
+                            power = 0;
+                        } else {
+                            power++;
+                        }
                         simulateDefaultShot();
                     } else if (decAngle.inside(e)) {
-                        angle--;
+                        if (angle <= 0) {
+                            angle = 359;
+                        } else {
+                            angle--;
+                        }
                         simulateDefaultShot();
                     } else if (incAngle.inside(e)) {
-                        angle++;
+                        if (angle >= 359) {
+                            angle = 0;
+                        } else {
+                            angle++;
+                        }
                         simulateDefaultShot();
                     }
                 } else {
@@ -212,59 +228,8 @@ class MyPanel extends JPanel {
     }
 
     private void simulateDefaultShot() {
-        simulateBallisticShot();
-    }
-
-    private void simulateBallisticShot() {
-        int s = redTank.getCenterX() - greenTank.getCenterX();
-        int v = power;
-        double g = 10;
-        int a = angle;
-        double px = 5; // px/paint
-        int paints = 1000;
-
-        int directionX = 1;
-        int directionY = -1;
-        if (a > 90) {
-            a = 180 - a;
-            directionX = -1;
-            //directionY = 1;
-        }
-
-        // todo: refine shot position and density
-        int shotSize = 2;
-        shotBlocks = new ArrayList<int[]>();
-        for (int p = 0; p <= paints + 1; p++) {
-            double x = px * p;
-            double y = x * tan(a) - g / (2 * p(v, 2) * p(cos(a), 2)) * p(x, 2);
-
-            int coordX = (int) x * directionX + greenTank.getCenterX();
-            int coordY = (int) y * directionY + greenTank.getCenterY();
-
-            if (coordX < 0) coordX = coordX * -1;
-            if (coordX > this.getWidth()) coordX = this.getWidth() - (coordX - this.getWidth());
-
-            shotBlocks.add(new int[]{
-                    coordX,
-                    coordY,
-                    shotSize, shotSize});
-        }
+        Analizer analizer = new Analizer(analImage);
+        shotBlocks = analizer.simulateBallisticShot(angle, power, greenTank.getCenterX(), greenTank.getCenterY());
         repaint();
-    }
-
-    private double p(double base, double power) {
-        return Math.pow(base, power);
-    }
-
-    private double cos(double alpha) {
-        return Math.cos(Math.PI / 180 * alpha);
-    }
-
-    private double sin(double alpha) {
-        return Math.sin(Math.PI / 180 * alpha);
-    }
-
-    private double tan(double alpha) {
-        return Math.tan(Math.PI / 180 * alpha);
     }
 }
