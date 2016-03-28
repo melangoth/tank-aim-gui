@@ -24,7 +24,6 @@ class MyPanel extends JPanel {
     MonitorLine posMonitor = new MonitorLine(new Rectangle(10, 10, 75, 20), 2, MLINE_BASELINEOFFSET);
     MonitorLine analizeButton = new MonitorLine(new Rectangle(95, 10, 75, 20), 2, MLINE_BASELINEOFFSET, "Analize");
     MonitorLine tankSwitch = new MonitorLine(new Rectangle(180, 10, 50, 20), 2, MLINE_BASELINEOFFSET);
-    MonitorLine straightShot = new MonitorLine(new Rectangle(240, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Straight");
     MonitorLine ballisticShot = new MonitorLine(new Rectangle(300, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Ballistic");
     MonitorLine decPower = new MonitorLine(new Rectangle(460, 10, 10, 20), 2, MLINE_BASELINEOFFSET, "-");
     MonitorLine showPower = new MonitorLine(new Rectangle(470, 10, 30, 20), 2, MLINE_BASELINEOFFSET, "");
@@ -47,8 +46,7 @@ class MyPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 if (analizeButton.inside(e.getX(), e.getY())) {
-                    //analizeImage();
-                    simulateStraightShot();
+                    analizeImage();
                 } else if (tankSwitch.inside(e.getX(), e.getY())) {
                     if (activeTank == greenTank) {
                         activeTank = redTank;
@@ -60,22 +58,20 @@ class MyPanel extends JPanel {
                         tankSwitch.setText("Green");
                     }
                     repaint();
-                } else if (straightShot.inside(e.getX(), e.getY())) {
-                    simulateStraightShot();
                 } else if (ballisticShot.inside(e.getX(), e.getY())) {
                     simulateBallisticShot();
                 } else if (decPower.inside(e.getX(), e.getY())) {
                     power--;
-                    simulateBallisticShot();
+                    simulateDefaultShot();
                 } else if (incPower.inside(e.getX(), e.getY())) {
                     power++;
-                    simulateBallisticShot();
+                    simulateDefaultShot();
                 } else if (decAngle.inside(e.getX(), e.getY())) {
                     angle--;
-                    simulateBallisticShot();
+                    simulateDefaultShot();
                 } else if (incAngle.inside(e.getX(), e.getY())) {
                     angle++;
-                    simulateBallisticShot();
+                    simulateDefaultShot();
                 } else {
                     moveTank(activeTank, e.getX(), e.getY());
                 }
@@ -173,7 +169,6 @@ class MyPanel extends JPanel {
         // Draw buttons
         analizeButton.paintSprite(g);
         tankSwitch.paintSprite(g);
-        straightShot.paintSprite(g);
         ballisticShot.paintSprite(g);
         incPower.paintSprite(g);
         showPower.setText(String.format("%d", power));
@@ -204,28 +199,14 @@ class MyPanel extends JPanel {
         g.drawImage(analImage, 0, 0, null);
     }
 
-    private void simulateStraightShot() {
-        int s = redTank.getCenterX() - greenTank.getCenterX(); // px
-        int v = 10; // px/paint
-        int paints = (int) Math.ceil(Math.abs(s) / 10);
-
-        int shotSize = 6;
-        shotBlocks = new ArrayList<int[]>();
-        for (int p = 0; p <= paints + 1; p++) {
-            int x = v * p;
-            int y = 0;
-            shotBlocks.add(new int[]{
-                    x + greenTank.getCenterX() - shotSize / 2,
-                    y + greenTank.getCenterY() - shotSize / 2,
-                    shotSize, shotSize});
-        }
-        repaint();
+    private void simulateDefaultShot() {
+        simulateBallisticShot();
     }
 
     private void simulateBallisticShot() {
         int s = redTank.getCenterX() - greenTank.getCenterX();
         int v = power;
-        int g = 10;
+        double g = 10;
         int a = angle;
         double px = 5; // px/paint
         int paints = Math.abs(s);
@@ -248,10 +229,14 @@ class MyPanel extends JPanel {
     }
 
     private double cos(double alpha) {
-        return Math.cos(alpha);
+        return Math.cos(Math.PI / 180 * alpha);
+    }
+
+    private double sin(double alpha) {
+        return Math.sin(Math.PI / 180 * alpha);
     }
 
     private double tan(double alpha) {
-        return Math.tan(alpha);
+        return Math.tan(Math.PI / 180 * alpha);
     }
 }
