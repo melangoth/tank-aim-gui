@@ -138,11 +138,14 @@ public class Analizer {
 
         int directionX = 1;
         int directionY = -1;
-        if (a > 90) {
+        if (90 < a && a <= 180) {
             a = 180 - a;
             directionX = -1;
-            //directionY = 1;
+        } else if (180 < a && a <= 270) {
+            a = 360 - a;
+            directionX = -1;
         }
+        System.out.println(String.format("Calculationg angle: %d", a));
 
         // todo: refine shot position and density
         int shotSize = 2;

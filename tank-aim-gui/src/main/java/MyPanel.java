@@ -42,8 +42,8 @@ class MyPanel extends JPanel {
     private int lastAnalTime = -1;
     private Tank activeTank;
     private ArrayList<int[]> shotBlocks = new ArrayList<int[]>();
-    private int power = 100; //93; //72;
-    private int angle = 154; //32; //45;
+    private int power = 72; //93; //72;
+    private int angle = 45; //32; //45;
 
     public MyPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
