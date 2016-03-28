@@ -21,7 +21,9 @@ class MyPanel extends JPanel {
     // sprites
     Tank greenTank = new Tank(Color.GREEN, 131, 281);
     Tank redTank = new Tank(Color.RED, 660, 285);
-
+    // Fields
+    String[] fields = new String[]{"images/img6.png", "images/img7.png"};
+    int fieldPointer = 0;
     // Menu buttons
     ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>();
     MenuItem posMonitor = new MenuItem(new Rectangle(10, 10, 75, 20), 2, MLINE_BASELINEOFFSET);
@@ -107,6 +109,8 @@ class MyPanel extends JPanel {
                             angle++;
                         }
                         simulateDefaultShot();
+                    } else if (getFieldButton.inside(e)) {
+                        changeField();
                     }
                 } else {
                     moveTank(activeTank, e.getX(), e.getY());
@@ -127,12 +131,23 @@ class MyPanel extends JPanel {
         tankSwitch.setColor(Color.GREEN);
         activeTank = greenTank;
 
-        File f = new File("images/img6.png");
+        loadImage(fields[fieldPointer]);
+    }
+
+    private void loadImage(String path) {
+        File f = new File(path);
         try {
             analImage = ImageIO.read(f);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void changeField() {
+        fieldPointer++;
+        if (fieldPointer >= fields.length) fieldPointer = 0;
+        loadImage(fields[fieldPointer]);
+        repaint();
     }
 
     private void analizeImage() {
