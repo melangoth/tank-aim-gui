@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
 /**
  * Created by develrage on 2016. 03. 25..
@@ -51,8 +52,8 @@ public class MenuItem {
         g.drawRect(getX(), getY(), getWidth(), getHeight());
     }
 
-    public boolean inside(int x, int y) {
-        if (x >= getX() && x <= getX() + getWidth() && y >= getY() && y <= getY() + getHeight()) {
+    public boolean inside(MouseEvent e) {
+        if (e.getX() >= getX() && e.getX() <= getX() + getWidth() && e.getY() >= getY() && e.getY() <= getY() + getHeight()) {
             return true;
         } else {
             return false;
