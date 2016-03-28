@@ -61,33 +61,35 @@ class MyPanel extends JPanel {
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                if (analizeButton.inside(e)) {
-                    analizeImage();
-                } else if (tankSwitch.inside(e)) {
-                    if (activeTank == greenTank) {
-                        activeTank = redTank;
-                        tankSwitch.setColor(Color.RED);
-                        tankSwitch.setText("Red");
-                    } else {
-                        activeTank = greenTank;
-                        tankSwitch.setColor(Color.GREEN);
-                        tankSwitch.setText("Green");
+                if (e.getY() < INTERACT_MARGIN_TOP) {
+                    if (analizeButton.inside(e)) {
+                        analizeImage();
+                    } else if (tankSwitch.inside(e)) {
+                        if (activeTank == greenTank) {
+                            activeTank = redTank;
+                            tankSwitch.setColor(Color.RED);
+                            tankSwitch.setText("Red");
+                        } else {
+                            activeTank = greenTank;
+                            tankSwitch.setColor(Color.GREEN);
+                            tankSwitch.setText("Green");
+                        }
+                        repaint();
+                    } else if (ballisticShot.inside(e)) {
+                        simulateBallisticShot();
+                    } else if (decPower.inside(e)) {
+                        power--;
+                        simulateDefaultShot();
+                    } else if (incPower.inside(e)) {
+                        power++;
+                        simulateDefaultShot();
+                    } else if (decAngle.inside(e)) {
+                        angle--;
+                        simulateDefaultShot();
+                    } else if (incAngle.inside(e)) {
+                        angle++;
+                        simulateDefaultShot();
                     }
-                    repaint();
-                } else if (ballisticShot.inside(e)) {
-                    simulateBallisticShot();
-                } else if (decPower.inside(e)) {
-                    power--;
-                    simulateDefaultShot();
-                } else if (incPower.inside(e)) {
-                    power++;
-                    simulateDefaultShot();
-                } else if (decAngle.inside(e)) {
-                    angle--;
-                    simulateDefaultShot();
-                } else if (incAngle.inside(e)) {
-                    angle++;
-                    simulateDefaultShot();
                 } else {
                     moveTank(activeTank, e.getX(), e.getY());
                 }
@@ -96,7 +98,9 @@ class MyPanel extends JPanel {
 
         addMouseMotionListener(new MouseAdapter() {
             public void mouseDragged(MouseEvent e) {
-                moveTank(activeTank, e.getX(), e.getY());
+                if (e.getY() > INTERACT_MARGIN_TOP) {
+                    moveTank(activeTank, e.getX(), e.getY());
+                }
             }
         });
 
@@ -157,6 +161,7 @@ class MyPanel extends JPanel {
 
             tank.setCenter(xx, yy);
 
+            simulateDefaultShot();
             repaint();
         }
     }
@@ -219,7 +224,7 @@ class MyPanel extends JPanel {
         double g = 10;
         int a = angle;
         double px = 5; // px/paint
-        int paints = Math.abs(s);
+        int paints = 1000;
 
         int directionX = 1;
         int directionY = -1;
