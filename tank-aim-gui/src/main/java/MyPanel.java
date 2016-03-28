@@ -21,16 +21,20 @@ class MyPanel extends JPanel {
     // sprites
     Tank greenTank = new Tank(Color.GREEN, 131, 281);
     Tank redTank = new Tank(Color.RED, 660, 285);
-    MonitorLine posMonitor = new MonitorLine(new Rectangle(10, 10, 75, 20), 2, MLINE_BASELINEOFFSET);
-    MonitorLine analizeButton = new MonitorLine(new Rectangle(95, 10, 75, 20), 2, MLINE_BASELINEOFFSET, "Analize");
-    MonitorLine tankSwitch = new MonitorLine(new Rectangle(180, 10, 50, 20), 2, MLINE_BASELINEOFFSET);
-    MonitorLine ballisticShot = new MonitorLine(new Rectangle(300, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Ballistic");
-    MonitorLine decPower = new MonitorLine(new Rectangle(460, 10, 10, 20), 2, MLINE_BASELINEOFFSET, "-");
-    MonitorLine showPower = new MonitorLine(new Rectangle(470, 10, 30, 20), 2, MLINE_BASELINEOFFSET, "");
-    MonitorLine incPower = new MonitorLine(new Rectangle(500, 10, 10, 20), 2, MLINE_BASELINEOFFSET, "+");
-    MonitorLine decAngle = new MonitorLine(new Rectangle(520, 10, 10, 20), 2, MLINE_BASELINEOFFSET, "-");
-    MonitorLine showAngle = new MonitorLine(new Rectangle(530, 10, 30, 20), 2, MLINE_BASELINEOFFSET, "");
-    MonitorLine incAngle = new MonitorLine(new Rectangle(560, 10, 10, 20), 2, MLINE_BASELINEOFFSET, "+");
+
+    // Menu buttons
+    ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>();
+    MenuItem posMonitor = new MenuItem(new Rectangle(10, 10, 75, 20), 2, MLINE_BASELINEOFFSET);
+    MenuItem analizeButton = new MenuItem(new Rectangle(95, 10, 75, 20), 2, MLINE_BASELINEOFFSET, "Analize");
+    MenuItem tankSwitch = new MenuItem(new Rectangle(180, 10, 50, 20), 2, MLINE_BASELINEOFFSET);
+    MenuItem ballisticShot = new MenuItem(new Rectangle(300, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Ballistic");
+    MenuItem decPower = new MenuItem(new Rectangle(460, 10, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
+    MenuItem showPower = new MenuItem(new Rectangle(475, 10, 35, 20), 2, MLINE_BASELINEOFFSET, "");
+    MenuItem incPower = new MenuItem(new Rectangle(510, 10, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
+    MenuItem decAngle = new MenuItem(new Rectangle(535, 10, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
+    MenuItem showAngle = new MenuItem(new Rectangle(550, 10, 35, 20), 2, MLINE_BASELINEOFFSET, "");
+    MenuItem incAngle = new MenuItem(new Rectangle(585, 10, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
+
     // analizing
     private Image analImage = null;
     private ArrayList<SearchBlock> searchBlocks = new ArrayList<SearchBlock>();
@@ -42,6 +46,18 @@ class MyPanel extends JPanel {
 
     public MyPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
+
+        // initialization
+        menuItems.add(posMonitor);
+        menuItems.add(analizeButton);
+        menuItems.add(tankSwitch);
+        menuItems.add(ballisticShot);
+        menuItems.add(decPower);
+        menuItems.add(showPower);
+        menuItems.add(incPower);
+        menuItems.add(decAngle);
+        menuItems.add(showAngle);
+        menuItems.add(incAngle);
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -167,17 +183,11 @@ class MyPanel extends JPanel {
         posMonitor.paintSprite(g);
 
         // Draw buttons
-        analizeButton.paintSprite(g);
-        tankSwitch.paintSprite(g);
-        ballisticShot.paintSprite(g);
-        incPower.paintSprite(g);
-        showPower.setText(String.format("%d", power));
-        showPower.paintSprite(g);
-        decPower.paintSprite(g);
-        incAngle.paintSprite(g);
-        showAngle.setText(String.format("%d", angle));
-        showAngle.paintSprite(g);
-        decAngle.paintSprite(g);
+        showPower.setText(String.format("P:%d", power));
+        showAngle.setText(String.format("A:%d", angle));
+        for (MenuItem item : menuItems) {
+            item.paintSprite(g);
+        }
 
         // Draw Tanks
         greenTank.paintSprite(g);
