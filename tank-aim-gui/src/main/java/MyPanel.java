@@ -27,13 +27,14 @@ class MyPanel extends JPanel {
     MenuItem posMonitor = new MenuItem(new Rectangle(10, 10, 75, 20), 2, MLINE_BASELINEOFFSET);
     MenuItem analizeButton = new MenuItem(new Rectangle(95, 10, 75, 20), 2, MLINE_BASELINEOFFSET, "Analize");
     MenuItem tankSwitch = new MenuItem(new Rectangle(180, 10, 50, 20), 2, MLINE_BASELINEOFFSET);
-    MenuItem ballisticShot = new MenuItem(new Rectangle(300, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Ballistic");
+    MenuItem getFieldButton = new MenuItem(new Rectangle(240, 10, 75, 20), 2, MLINE_BASELINEOFFSET, "Get Field");
     MenuItem decPower = new MenuItem(new Rectangle(460, 10, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
     MenuItem showPower = new MenuItem(new Rectangle(475, 10, 35, 20), 2, MLINE_BASELINEOFFSET, "");
     MenuItem incPower = new MenuItem(new Rectangle(510, 10, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
     MenuItem decAngle = new MenuItem(new Rectangle(535, 10, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
     MenuItem showAngle = new MenuItem(new Rectangle(550, 10, 35, 20), 2, MLINE_BASELINEOFFSET, "");
     MenuItem incAngle = new MenuItem(new Rectangle(585, 10, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
+    MenuItem ballisticShot = new MenuItem(new Rectangle(610, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Ballistic");
 
     // analizing
     private Image analImage = null;
@@ -58,6 +59,7 @@ class MyPanel extends JPanel {
         menuItems.add(decAngle);
         menuItems.add(showAngle);
         menuItems.add(incAngle);
+        menuItems.add(getFieldButton);
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -197,11 +199,6 @@ class MyPanel extends JPanel {
         // Draw Tanks
         greenTank.paintSprite(g);
         redTank.paintSprite(g);
-
-        // Draw tanks distance
-        g.setColor(Color.YELLOW);
-        g.drawLine(greenTank.getCenterX(), greenTank.getCenterY(), redTank.getCenterX(), greenTank.getCenterY());
-        g.drawString(String.format("~ %d", Math.abs(greenTank.getCenterX() - redTank.getCenterX())), greenTank.getCenterX() + 10, greenTank.getCenterY() - 10);
 
         // Draw shotblocks
         g.setColor(Color.ORANGE);
