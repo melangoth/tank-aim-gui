@@ -9,9 +9,7 @@ public class Runner {
         SwingUtilities.invokeLater(new Win());
     }
 
-    // todo inside analizer, return only relevant block list to the gui
     // todo find tanks in field blocks
-    // todo find exact field line inside field blocks
     // todo implement realtime screen capturing
     // todo monitor tanks relative to their last known place
     // todo later reimplement partial repaint, if performance requires

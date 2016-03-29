@@ -90,8 +90,10 @@ public class Analizer {
         return (l1 <= a && a <= l2);
     }
 
-    public ArrayList<int[]> simulateBallisticShot(int angle, int power, int startX, int startY) {
+    public ArrayList<int[]> simulateBallisticShot(int angle, int power, int tankX, int tankY) {
         ArrayList<int[]> shotBlocks;
+
+        double[] T = getTurretEnd(angle, tankX, tankY, 18);
 
         int v = power;
         double g = 10;
@@ -116,8 +118,8 @@ public class Analizer {
             double x = px * p;
             double y = x * tan(a) - g / (2 * p(v, 2) * p(cos(a), 2)) * p(x, 2);
 
-            int coordX = (int) x * directionX + startX;
-            int coordY = (int) y * directionY + startY;
+            int coordX = (int) (x * directionX + tankX + T[0]);
+            int coordY = (int) (y * directionY + tankY + (T[1] * -1));
 
             if (coordX < 0) coordX = coordX * -1;
             if (coordX > fieldWidth) coordX = fieldWidth - (coordX - fieldWidth);
@@ -129,6 +131,13 @@ public class Analizer {
         }
 
         return shotBlocks;
+    }
+
+    private double[] getTurretEnd(double angle, double tankX, double tankY, double r) {
+        double x = cos(angle) * r;
+        double y = sin(angle) * r;
+
+        return new double[]{x, y};
     }
 
     private double p(double base, double power) {

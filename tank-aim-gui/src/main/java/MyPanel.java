@@ -19,7 +19,7 @@ class MyPanel extends JPanel {
     private static final int INTERACT_MARGIN_LEFT = 5;
     private static final int INTERACT_MARGIN_RIGHT = 5;
     // Sprites
-    Tank greenTank = new Tank(Color.GREEN, 68, 116);
+    Tank greenTank = new Tank(Color.GREEN, 77, 131);
     Tank redTank = new Tank(Color.RED, 660, 222);
     // Fields
     String[] fields = new String[]{"images/img6.png", "images/img7.png"};
