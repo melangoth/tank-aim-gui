@@ -10,16 +10,6 @@ public class Analizer {
     private BufferedImage image;
     private int fieldWidth;
     private int fieldHeight;
-    private int searchCounter = 0;
-    private SearchBlock nextSearchBlock = null;
-
-    // searching
-    private int blockx = 0;
-    private int blocky = 0;
-    private int blockw = 5;
-    private int blockh = 45;
-    private int stepx = blockw;
-    private int stepy = 10;
 
     public Analizer(Image image) {
         this.image = (BufferedImage) image;
@@ -27,104 +17,73 @@ public class Analizer {
         this.fieldHeight = this.image.getHeight();
     }
 
-    public SearchBlock nextSearchBlock() {
-        return nextSearchBlock;
-    }
-
-    public boolean hasSearchBlock() {
-        searchCounter++;
-        if (searchCounter > SEARCHLIMIT) {
-            return false;
-        } else {
-            // if next block out of top, or bottom
-            if (image.getHeight() < blocky + blockh || image.getMinY() > blocky) {
-                System.out.println("Next block gone out top or bottom");
-                blocky = 0;
-            }
-
-            // if next block is the same as the last
-            if (nextSearchBlock != null && nextSearchBlock.getX() == blockx && nextSearchBlock.getY() == blocky) {
-                System.out.println("Next block is the same as last");
-                blockx += stepx;
-            }
-
-            // if next block is inside right limit
-            if (image.getWidth() >= blockx + blockw) {
-                nextSearchBlock = new SearchBlock(blockx, blocky, blockw, blockh);
-
-                boolean isFieldLine = hasFieldLine(nextSearchBlock);
-
-                if (isFieldLine) {
-                    blockx += stepx;
-                } else {
-                    if (colorIsGround(nextSearchBlock.getTopColor()) && colorIsGround(nextSearchBlock.getBottomColor())) {
-                        blocky -= stepy;
-                    } else if (colorIsSpace(nextSearchBlock.getBottomColor()) && colorIsSpace(nextSearchBlock.getTopColor())) {
-                        blocky += stepy;
-                    } else {
-                        System.out.println("next block cant find neither air nor bottom");
-
-                    }
-                }
-                return true;
-            } else { // if next block gone out on right limit
-                System.out.println("next block gone aout on right");
-                nextSearchBlock = null;
-                return false;
-            }
-        }
-    }
-
-    private boolean hasFieldLine(SearchBlock block) {
-        int bottomR = 0;
-        int bottomG = 0;
-        int bottomB = 0;
-        int topR = 0;
-        int topG = 0;
-        int topB = 0;
+    private Color getAverageColor(int[] block) {
+        int cR = 0;
+        int cG = 0;
+        int cB = 0;
         int blocks = 0;
 
-        for (int i = 0; i < block.getWidth(); i++) {
-            for (int j = 0; j < 5; j++) {
+        for (int i = 0; i < block[2]; i++) {
+            for (int j = 0; j < block[3]; j++) {
                 blocks++;
-                int x = i + block.getX();
-                int by = block.getY() + block.getHeight() - j;
-                int ty = block.getY() + j;
+                int x = i + block[0];
+                int y = j + block[1];
 
-                Color cBottom = new Color(image.getRGB(x, by), true);
-                bottomR += cBottom.getRed();
-                bottomG += cBottom.getGreen();
-                bottomB += cBottom.getBlue();
-
-                Color cTop = new Color(image.getRGB(x, ty), true);
-                topR += cTop.getRed();
-                topG += cTop.getGreen();
-                topB += cTop.getBlue();
+                Color c = new Color(image.getRGB(x, y), true);
+                cR += c.getRed();
+                cG += c.getGreen();
+                cB += c.getBlue();
             }
         }
 
-        bottomR /= blocks;
-        bottomG /= blocks;
-        bottomB /= blocks;
+        cR /= blocks;
+        cG /= blocks;
+        cB /= blocks;
 
-        topR /= blocks;
-        topG /= blocks;
-        topB /= blocks;
-
-        System.out.println(String.format("Search #%d; Top RGB avg: %d,%d,%d; Bottom RGB avg: %d,%d,%d,", searchCounter, topR, topG, topB, bottomR, bottomG, bottomB));
-
-        block.setTopColor(new Color(topR, topG, topB));
-        block.setBottomColor(new Color(bottomR, bottomG, bottomB));
-
-        return (colorIsSpace(block.getTopColor()) && colorIsGround(block.getBottomColor()));
+        return new Color(cR, cG, cB);
     }
 
-    private boolean colorIsSpace(Color color) {
-        return (color.getRed() < 50 && color.getGreen() < 50 && color.getBlue() < 60);
+    public ArrayList<int[]> searchFieldLine() {
+        ArrayList<int[]> fieldLine = new ArrayList<int[]>();
+
+        int lookW = 5;
+        int lookH = 5;
+        int startX = 0;
+        int endX = image.getWidth()-lookW;
+        int startY = 0;
+        int endY = image.getHeight() - lookH;
+
+        for (int x = endX; x >= startX; x -= lookW) {
+            for (int y = endY; y >= startY; y -= lookH) {
+                int[] block = new int[]{x, y, lookW, lookH};
+                Color c = getAverageColor(block);
+                boolean fl = isField(c);
+
+                System.out.println(String.format("Analizer: x:%d y:%d rgb:%s f:%s", x, y,
+                        String.format("%d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()), fl));
+
+                if (fl) fieldLine.add(block);
+            }
+        }
+
+        return fieldLine;
     }
 
-    private boolean colorIsGround(Color color) {
-        return (color.getRed() < 100 && color.getGreen() < 160 && color.getBlue() > 130);
+    private boolean isField(Color c) {
+        int r = c.getRed();
+        int g = c.getGreen();
+        int b = c.getBlue();
+        if (isIn(r, 50, 100) && isIn(g, 120, 170) && isIn(b, 200, 255)) {
+            return true;
+        } else if (isIn(r, 20, 80) && isIn(g, 60, 140) && isIn(b, 100, 220)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isIn(int a, int l1, int l2) {
+        return (l1 <= a && a <= l2);
     }
 
     public ArrayList<int[]> simulateBallisticShot(int angle, int power, int startX, int startY) {

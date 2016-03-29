@@ -12,18 +12,18 @@ import java.util.Date;
  * Created by develrage on 2016. 03. 25..
  */
 class MyPanel extends JPanel {
-    // global
+    // Global
     private static final int MLINE_BASELINEOFFSET = 3;
     private static final int INTERACT_MARGIN_TOP = 40;
     private static final int INTERACT_MARGIN_BOTTOM = 5;
     private static final int INTERACT_MARGIN_LEFT = 5;
     private static final int INTERACT_MARGIN_RIGHT = 5;
-    // sprites
-    Tank greenTank = new Tank(Color.GREEN, 131, 281);
-    Tank redTank = new Tank(Color.RED, 660, 285);
+    // Sprites
+    Tank greenTank = new Tank(Color.GREEN, 68, 116);
+    Tank redTank = new Tank(Color.RED, 660, 222);
     // Fields
     String[] fields = new String[]{"images/img6.png", "images/img7.png"};
-    int fieldPointer = 0;
+    int fieldPointer = 1; // field background
     // Menu buttons
     ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>();
     MenuItem posMonitor = new MenuItem(new Rectangle(10, 10, 75, 20), 2, MLINE_BASELINEOFFSET);
@@ -40,12 +40,12 @@ class MyPanel extends JPanel {
 
     // analizing
     private Image analImage = null;
-    private ArrayList<SearchBlock> searchBlocks = new ArrayList<SearchBlock>();
     private int lastAnalTime = -1;
     private Tank activeTank;
     private ArrayList<int[]> shotBlocks = new ArrayList<int[]>();
-    private int power = 72; //93; //72;
-    private int angle = 45; //32; //45;
+    private int power = 100; //93; //72;
+    private int angle = 112; //32; //45;
+    private ArrayList<int[]> fieldLine = new ArrayList<int[]>();
 
     public MyPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
@@ -154,11 +154,7 @@ class MyPanel extends JPanel {
         Date start = new Date();
 
         Analizer anal = new Analizer(analImage);
-        while (anal.hasSearchBlock()) {
-//            sleepSome(500);
-            SearchBlock block = anal.nextSearchBlock();
-            searchBlocks.add(block);
-        }
+        fieldLine = anal.searchFieldLine();
 
         int end = (new Date()).compareTo(start);
         analizeButton.setText(String.format("Analize (%d)", end));
@@ -204,16 +200,15 @@ class MyPanel extends JPanel {
     }
 
     public void paintComponent(Graphics g) {
-//        System.out.println("Painting Component..." + (new Date()).getTime());
         super.paintComponent(g);
 
         // Draw background
         drawBackground(g);
 
-        // Draw search blocks
+        // Draw fieldLine
         g.setColor(Color.MAGENTA);
-        for (SearchBlock block : searchBlocks) {
-            g.drawRect(block.getX(), block.getY(), block.getWidth(), block.getHeight());
+        for (int[] fl : fieldLine) {
+            g.drawRect(fl[0], fl[1], fl[2], fl[3]);
         }
 
         // Draw monitor line 1
