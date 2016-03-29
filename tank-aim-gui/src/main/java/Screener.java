@@ -15,14 +15,14 @@ public class Screener extends SikulixFrame {
     private final Pattern indicator;
     private Rectangle region = null;
 
-    public Screener() {
+    private Screener() {
         File f = new File("images");
         ImagePath.add(f.getAbsolutePath());
         SikulixFrame.setImagePaths();
         indicator = new Pattern("indicator.png");
     }
 
-    public static Screener getInstance() {
+    public synchronized static Screener getInstance() {
         if (instance == null) {
             instance = new Screener();
         }
@@ -30,7 +30,7 @@ public class Screener extends SikulixFrame {
         return instance;
     }
 
-    public BufferedImage captureRegion() {
+    public synchronized BufferedImage captureRegion() {
         BufferedImage capture = null;
 
         if (region != null) {
@@ -46,7 +46,7 @@ public class Screener extends SikulixFrame {
         return capture;
     }
 
-    public void findRegion() {
+    public synchronized void findRegion() {
         for (int s = Screen.getNumberScreens() - 1; s >= 0; s--) {
             log.info("Searching app on Screen#" + s);
             Region screen = new Region((new Screen(s)).getBounds());
@@ -59,7 +59,7 @@ public class Screener extends SikulixFrame {
             }
 
             log.info("Indicator found.");
-            ind.highlight(2);
+            //ind.highlight(2);
 
             region = new Rectangle(ind.getX() + 4,
                     ind.getY() + 21 + 10,
@@ -73,7 +73,7 @@ public class Screener extends SikulixFrame {
                     region.height,
                     s);
 
-            bigRegion.highlight(2);
+            //bigRegion.highlight(2);
             break;
         }
     }

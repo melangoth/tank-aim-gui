@@ -1,8 +1,11 @@
+import org.apache.log4j.Logger;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +15,7 @@ import java.util.Date;
  * Created by develrage on 2016. 03. 25..
  */
 class MyPanel extends JPanel {
+    final static Logger log = Logger.getLogger(MyPanel.class);
     // Global
     private static final int MLINE_BASELINEOFFSET = 3;
     private static final int MLINE_FIRSTLINE = 10;
@@ -19,6 +23,7 @@ class MyPanel extends JPanel {
     private static final int INTERACT_MARGIN_BOTTOM = 5;
     private static final int INTERACT_MARGIN_LEFT = 5;
     private static final int INTERACT_MARGIN_RIGHT = 5;
+    private static MyPanel instance = null;
     // Sprites
     Tank greenTank = new Tank(Color.GREEN, 77, 131);
     Tank redTank = new Tank(Color.RED, 660, 222);
@@ -49,7 +54,7 @@ class MyPanel extends JPanel {
     private int angle = 112; //32; //45;
     private ArrayList<int[]> fieldLine = new ArrayList<int[]>();
 
-    public MyPanel() {
+    private MyPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
 
         // initialization
@@ -138,10 +143,34 @@ class MyPanel extends JPanel {
         loadImage(fields[fieldPointer]);
     }
 
+    public static MyPanel getInstance() {
+        if (instance == null) {
+            instance = new MyPanel();
+        }
+
+        return instance;
+    }
+
     private void captureScreen() {
         // sikuli call
-        Screener.getInstance().findRegion();
-        analImage = Screener.getInstance().captureRegion();
+        Thread th = new Thread(new Runnable() {
+            public void run() {
+                Screener.getInstance().findRegion();
+                BufferedImage img = Screener.getInstance().captureRegion();
+                if (img != null) {
+                    log.info("Screen captured.");
+                    MyPanel.getInstance().refreshImage(img);
+                } else {
+                    log.warn("Failed to get screen capture.");
+                }
+            }
+        });
+
+        th.start();
+    }
+
+    public synchronized void refreshImage(BufferedImage img) {
+        analImage = img;
         repaint();
     }
 

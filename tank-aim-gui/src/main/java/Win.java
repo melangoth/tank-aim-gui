@@ -10,7 +10,7 @@ public class Win implements Runnable {
                 SwingUtilities.isEventDispatchThread());
         JFrame f = new JFrame("Swing Paint Demo");
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.add(new MyPanel());
+        f.add(MyPanel.getInstance());
         f.pack();
         f.setVisible(true);
     }
