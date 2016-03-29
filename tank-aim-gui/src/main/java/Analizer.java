@@ -1,7 +1,10 @@
 import org.apache.log4j.Logger;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -10,15 +13,21 @@ import java.util.ArrayList;
 public class Analizer implements Runnable {
     final static Logger log = Logger.getLogger(Analizer.class);
     private static Analizer instance = null;
-    private BufferedImage image;
+    // Fields
+    String[] imagePool = new String[]{"images/img6.png", "images/img7.png", "images/img8.png"};
+    int imagePoolPointer = 0;
+    // Runtime
+    private BufferedImage image = null;
     private int fieldWidth;
     private int fieldHeight;
     private ArrayList<int[]> fieldBlocks = new ArrayList<int[]>();
 
     private Analizer() {
+        log.trace("Analizer()");
     }
 
     public static Analizer getInstance() {
+        log.trace("getInstance()");
         if (instance == null) {
             instance = new Analizer();
         }
@@ -26,14 +35,54 @@ public class Analizer implements Runnable {
         return instance;
     }
 
+    public void run() {
+        log.debug("run()");
+        loadImagePool();
+
+        //noinspection InfiniteLoopStatement
+        while (true) {
+            try {
+                Thread.sleep(1000);
+                log.trace("Analizer hearthbeat.");
+            } catch (InterruptedException e) {
+                log.warn("Sleep interrupted.", e);
+            }
+        }
+    }
+
     public void loadImage(BufferedImage image) {
+        log.trace("loadImage(BufferedImage image)");
         this.image = image;
         this.fieldWidth = this.image.getWidth();
         this.fieldHeight = this.image.getHeight();
     }
 
     public void loadImage(Image image) {
+        log.trace("loadImage(Image image)");
         loadImage((BufferedImage) image);
+    }
+
+    public void loadImage(String path) {
+        log.trace(String.format("loadImage(path=%s)", path));
+        File f = new File(path);
+        try {
+            loadImage(ImageIO.read(f));
+        } catch (IOException e) {
+            log.error(String.format("Failed to ImageIO.read(%s)", f.getPath()));
+        }
+    }
+
+    public synchronized void loadImagePool() {
+        loadImagePool(false);
+    }
+
+    public synchronized void loadImagePool(boolean rotate) {
+        log.trace(String.format("loadImagePool(rotate=%s)", rotate));
+        if (rotate) {
+            imagePoolPointer++;
+            if (imagePoolPointer >= imagePool.length) imagePoolPointer = 0;
+        }
+        loadImage(imagePool[imagePoolPointer]);
     }
 
     private Color getAverageColor(int[] block) {
@@ -230,15 +279,13 @@ public class Analizer implements Runnable {
         return new int[]{(int) Math.round(x), (int) Math.round(y)};
     }
 
-    public void run() {
-        //noinspection InfiniteLoopStatement
-        while (true) {
-            try {
-                Thread.sleep(1000);
-                log.info("Analizer hearthbeat.");
-            } catch (InterruptedException e) {
-                log.warn("Sleep interrupted.", e);
-            }
+    public synchronized BufferedImage getImage() {
+        log.trace("getImage()");
+
+        if (image == null) {
+            log.warn("Image not set yet.");
         }
+
+        return image;
     }
 }
