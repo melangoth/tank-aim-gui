@@ -170,8 +170,12 @@ class TankAimGui extends JPanel {
     }
 
     public synchronized void refreshImage(BufferedImage img) {
+        loadImage(img);
+    }
+
+    private void loadImage(BufferedImage img) {
         analImage = img;
-        repaint();
+        analizeImage();
     }
 
     private void loadImage(String path) {
