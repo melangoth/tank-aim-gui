@@ -14,8 +14,8 @@ import java.util.Date;
 /**
  * Created by develrage on 2016. 03. 25..
  */
-class MyPanel extends JPanel {
-    final static Logger log = Logger.getLogger(MyPanel.class);
+class TankAimGui extends JPanel {
+    final static Logger log = Logger.getLogger(TankAimGui.class);
     // Global
     private static final int MLINE_BASELINEOFFSET = 3;
     private static final int MLINE_FIRSTLINE = 10;
@@ -23,7 +23,7 @@ class MyPanel extends JPanel {
     private static final int INTERACT_MARGIN_BOTTOM = 5;
     private static final int INTERACT_MARGIN_LEFT = 5;
     private static final int INTERACT_MARGIN_RIGHT = 5;
-    private static MyPanel instance = null;
+    private static TankAimGui instance = null;
     // Sprites
     Tank greenTank = new Tank(Color.GREEN, 77, 131);
     Tank redTank = new Tank(Color.RED, 660, 222);
@@ -54,7 +54,7 @@ class MyPanel extends JPanel {
     private int angle = 112; //32; //45;
     private ArrayList<int[]> fieldLine = new ArrayList<int[]>();
 
-    private MyPanel() {
+    private TankAimGui() {
         setBorder(BorderFactory.createLineBorder(Color.black));
 
         // initialization
@@ -143,9 +143,9 @@ class MyPanel extends JPanel {
         loadImage(fields[fieldPointer]);
     }
 
-    public static MyPanel getInstance() {
+    public static TankAimGui getInstance() {
         if (instance == null) {
-            instance = new MyPanel();
+            instance = new TankAimGui();
         }
 
         return instance;
@@ -159,7 +159,7 @@ class MyPanel extends JPanel {
                 BufferedImage img = Screener.getInstance().captureRegion();
                 if (img != null) {
                     log.info("Screen captured.");
-                    MyPanel.getInstance().refreshImage(img);
+                    TankAimGui.getInstance().refreshImage(img);
                 } else {
                     log.warn("Failed to get screen capture.");
                 }
