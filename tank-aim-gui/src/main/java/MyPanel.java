@@ -14,7 +14,8 @@ import java.util.Date;
 class MyPanel extends JPanel {
     // Global
     private static final int MLINE_BASELINEOFFSET = 3;
-    private static final int INTERACT_MARGIN_TOP = 40;
+    private static final int MLINE_FIRSTLINE = 10;
+    private static final int INTERACT_MARGIN_TOP = 45;
     private static final int INTERACT_MARGIN_BOTTOM = 5;
     private static final int INTERACT_MARGIN_LEFT = 5;
     private static final int INTERACT_MARGIN_RIGHT = 5;
@@ -22,21 +23,21 @@ class MyPanel extends JPanel {
     Tank greenTank = new Tank(Color.GREEN, 77, 131);
     Tank redTank = new Tank(Color.RED, 660, 222);
     // Fields
-    String[] fields = new String[]{"images/img6.png", "images/img7.png"};
+    String[] fields = new String[]{"images/img6.png", "images/img7.png", "images/img8.png"};
     int fieldPointer = 1; // field background
     // Menu buttons
     ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>();
-    MenuItem posMonitor = new MenuItem(new Rectangle(10, 10, 75, 20), 2, MLINE_BASELINEOFFSET);
-    MenuItem analizeButton = new MenuItem(new Rectangle(95, 10, 75, 20), 2, MLINE_BASELINEOFFSET, "Analize");
-    MenuItem tankSwitch = new MenuItem(new Rectangle(180, 10, 50, 20), 2, MLINE_BASELINEOFFSET);
-    MenuItem getFieldButton = new MenuItem(new Rectangle(240, 10, 75, 20), 2, MLINE_BASELINEOFFSET, "Get Field");
-    MenuItem decPower = new MenuItem(new Rectangle(460, 10, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
-    MenuItem showPower = new MenuItem(new Rectangle(475, 10, 35, 20), 2, MLINE_BASELINEOFFSET, "");
-    MenuItem incPower = new MenuItem(new Rectangle(510, 10, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
-    MenuItem decAngle = new MenuItem(new Rectangle(535, 10, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
-    MenuItem showAngle = new MenuItem(new Rectangle(550, 10, 35, 20), 2, MLINE_BASELINEOFFSET, "");
-    MenuItem incAngle = new MenuItem(new Rectangle(585, 10, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
-    MenuItem ballisticShot = new MenuItem(new Rectangle(610, 10, 50, 20), 2, MLINE_BASELINEOFFSET, "Ballistic");
+    MenuItem screenShotButton = new MenuItem(new Rectangle(10, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "ScrShot");
+    MenuItem analizeButton = new MenuItem(new Rectangle(95, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "Analize");
+    MenuItem tankSwitch = new MenuItem(new Rectangle(180, MLINE_FIRSTLINE, 50, 20), 2, MLINE_BASELINEOFFSET);
+    MenuItem getFieldButton = new MenuItem(new Rectangle(240, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "Get Field");
+    MenuItem decPower = new MenuItem(new Rectangle(460, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
+    MenuItem showPower = new MenuItem(new Rectangle(475, MLINE_FIRSTLINE, 35, 20), 2, MLINE_BASELINEOFFSET, "");
+    MenuItem incPower = new MenuItem(new Rectangle(510, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
+    MenuItem decAngle = new MenuItem(new Rectangle(535, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
+    MenuItem showAngle = new MenuItem(new Rectangle(550, MLINE_FIRSTLINE, 35, 20), 2, MLINE_BASELINEOFFSET, "");
+    MenuItem incAngle = new MenuItem(new Rectangle(585, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
+    MenuItem ballisticShot = new MenuItem(new Rectangle(610, MLINE_FIRSTLINE, 50, 20), 2, MLINE_BASELINEOFFSET, "Ballistic");
 
     // analizing
     private Image analImage = null;
@@ -52,7 +53,7 @@ class MyPanel extends JPanel {
         setBorder(BorderFactory.createLineBorder(Color.black));
 
         // initialization
-        menuItems.add(posMonitor);
+        menuItems.add(screenShotButton);
         menuItems.add(analizeButton);
         menuItems.add(tankSwitch);
         menuItems.add(ballisticShot);
@@ -67,7 +68,9 @@ class MyPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 if (e.getY() < INTERACT_MARGIN_TOP) {
-                    if (analizeButton.inside(e)) {
+                    if (screenShotButton.inside(e)) {
+                        captureScreen();
+                    } else if (analizeButton.inside(e)) {
                         analizeImage();
                     } else if (tankSwitch.inside(e)) {
                         if (activeTank == greenTank) {
@@ -135,10 +138,15 @@ class MyPanel extends JPanel {
         loadImage(fields[fieldPointer]);
     }
 
+    private void captureScreen() {
+        // sikuli call
+    }
+
     private void loadImage(String path) {
         File f = new File(path);
         try {
             analImage = ImageIO.read(f);
+            analizeImage();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -152,7 +160,7 @@ class MyPanel extends JPanel {
     }
 
     private void analizeImage() {
-        Date start = new Date();
+        long start = (new Date()).getTime();
 
         Analizer anal = new Analizer(analImage);
         fieldLine = anal.searchFieldLine();
@@ -160,8 +168,10 @@ class MyPanel extends JPanel {
         greenTank.setCenter(tankBlocks.get(0)[0], tankBlocks.get(0)[1]);
         shotBlocks = anal.simulateBallisticShot(angle, power, greenTank.getCenterX(), greenTank.getCenterY());
 
-        int end = (new Date()).compareTo(start);
+        long end = (new Date()).getTime();
+        end = end - start;
         analizeButton.setText(String.format("Analize (%d)", end));
+        System.out.println(String.format("Panel: Analization took %f seconds.", (double) end / 1000));
         repaint();
     }
 
@@ -207,11 +217,8 @@ class MyPanel extends JPanel {
             g.drawRect(fl[0], fl[1], fl[2], fl[3]);
         }
 
-        // Draw monitor line 1
-        posMonitor.setText(String.format("@ %d,%d", greenTank.getX(), greenTank.getY()));
-        posMonitor.paintSprite(g);
-
         // Draw buttons
+        screenShotButton.paintSprite(g);
         showPower.setText(String.format("P:%d", power));
         showAngle.setText(String.format("A:%d", angle));
         for (MenuItem item : menuItems) {

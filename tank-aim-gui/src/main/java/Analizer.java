@@ -99,7 +99,7 @@ public class Analizer {
         int v = power;
         double g = 10;
         int a = angle;
-        double px = 1; // px/paint
+        double px = 2; // px/paint
         int paints = 1000;
 
         int directionX = 1;
@@ -112,7 +112,6 @@ public class Analizer {
             directionX = -1;
         }
 
-        // todo: refine shot position and density
         int shotSize = 2;
         shotBlocks = new ArrayList<int[]>();
         for (int p = 0; p <= paints + 1; p++) {
@@ -159,7 +158,7 @@ public class Analizer {
 
     public void getTankColor(Tank tank) {
         Color c = getAverageColor(new int[]{tank.getX(), tank.getCenterY(), tank.getWidth(), tank.getHeight()});
-        System.out.println(String.format("Tank ACG Color: %d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()));
+//        System.out.println(String.format("Tank AVG Color: %d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()));
     }
 
     public ArrayList<int[]> searchTank() {
