@@ -1,3 +1,5 @@
+import org.apache.log4j.Logger;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -5,13 +7,23 @@ import java.util.ArrayList;
 /**
  * Created by develrage on 2016. 03. 25..
  */
-public class Analizer {
+public class Analizer implements Runnable {
+    final static Logger log = Logger.getLogger(Analizer.class);
+    private static Analizer instance = null;
     private BufferedImage image;
     private int fieldWidth;
     private int fieldHeight;
     private ArrayList<int[]> fieldBlocks = new ArrayList<int[]>();
 
-    public Analizer(Image image) {
+    public static Analizer getInstance() {
+        if (instance == null) {
+            instance = new Analizer();
+        }
+
+        return instance;
+    }
+
+    public void loadImage(Image image) {
         this.image = (BufferedImage) image;
         this.fieldWidth = this.image.getWidth();
         this.fieldHeight = this.image.getHeight();
@@ -215,5 +227,16 @@ public class Analizer {
         y = y / blocks.size();
 
         return new int[]{(int) Math.round(x), (int) Math.round(y)};
+    }
+
+    public void run() {
+        while (true) {
+            try {
+                Thread.currentThread().sleep(1000);
+                log.info(String.format("Analizer hearthbeat."));
+            } catch (InterruptedException e) {
+                log.warn("Sleep interrupted.", e);
+            }
+        }
     }
 }

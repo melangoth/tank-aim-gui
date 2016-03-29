@@ -198,11 +198,12 @@ class TankAimGui extends JPanel {
     private void analizeImage() {
         long start = (new Date()).getTime();
 
-        Analizer anal = new Analizer(analImage);
-        fieldLine = anal.searchFieldLine();
-        tankBlocks = anal.searchTank();
+        Analizer analizer = Analizer.getInstance();
+        analizer.loadImage(analImage);
+        fieldLine = analizer.searchFieldLine();
+        tankBlocks = analizer.searchTank();
         greenTank.setCenter(tankBlocks.get(0)[0], tankBlocks.get(0)[1]);
-        shotBlocks = anal.simulateBallisticShot(angle, power, greenTank.getCenterX(), greenTank.getCenterY());
+        shotBlocks = analizer.simulateBallisticShot(angle, power, greenTank.getCenterX(), greenTank.getCenterY());
 
         long end = (new Date()).getTime();
         end = end - start;
@@ -281,7 +282,8 @@ class TankAimGui extends JPanel {
     }
 
     private void simulateDefaultShot() {
-        Analizer analizer = new Analizer(analImage);
+        Analizer analizer = Analizer.getInstance();
+        analizer.loadImage(analImage);
         shotBlocks = analizer.simulateBallisticShot(angle, power, greenTank.getCenterX(), greenTank.getCenterY());
         analizer.getTankColor(greenTank);
         repaint();
