@@ -15,6 +15,9 @@ public class Analizer implements Runnable {
     private int fieldHeight;
     private ArrayList<int[]> fieldBlocks = new ArrayList<int[]>();
 
+    private Analizer() {
+    }
+
     public static Analizer getInstance() {
         if (instance == null) {
             instance = new Analizer();
@@ -227,7 +230,7 @@ public class Analizer implements Runnable {
         //noinspection InfiniteLoopStatement
         while (true) {
             try {
-                Thread.currentThread().wait(1000);
+                Thread.sleep(1000);
                 log.info("Analizer hearthbeat.");
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);

@@ -6,7 +6,11 @@ import javax.swing.*;
 public class TankAimGuiRunner {
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Win());
+        Analizer analizer = Analizer.getInstance();
+        Thread analizerThread = new Thread(analizer);
+        analizerThread.start();
+
+        //SwingUtilities.invokeLater(new Win());
 
         /*Screener scr = Screener.getInstance();
         scr.findRegion();
