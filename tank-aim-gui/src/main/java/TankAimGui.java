@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by develrage
@@ -20,13 +19,10 @@ class TankAimGui extends JPanel {
     private static final int INTERACT_MARGIN_LEFT = 5;
     private static final int INTERACT_MARGIN_RIGHT = 5;
     private static TankAimGui instance = null;
-    // Sprites
-    Tank greenTank = new Tank(Color.GREEN, 77, 131);
-    Tank redTank = new Tank(Color.RED, 660, 222);
+
     // Menu buttons
+    // todo rewrite to be able to stack menuitems, make them relative to each other
     ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>();
-    MenuItem screenShotButton = new MenuItem(new Rectangle(10, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "ScrShot");
-    MenuItem analyseButton = new MenuItem(new Rectangle(95, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "Analyse");
     MenuItem tankSwitch = new MenuItem(new Rectangle(180, MLINE_FIRSTLINE, 50, 20), 2, MLINE_BASELINEOFFSET);
     MenuItem changeImageButton = new MenuItem(new Rectangle(240, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "Chng Img");
     MenuItem decPower = new MenuItem(new Rectangle(460, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
@@ -35,26 +31,15 @@ class TankAimGui extends JPanel {
     MenuItem decAngle = new MenuItem(new Rectangle(535, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
     MenuItem showAngle = new MenuItem(new Rectangle(550, MLINE_FIRSTLINE, 35, 20), 2, MLINE_BASELINEOFFSET, "");
     MenuItem incAngle = new MenuItem(new Rectangle(585, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
-    MenuItem ballisticShot = new MenuItem(new Rectangle(610, MLINE_FIRSTLINE, 50, 20), 2, MLINE_BASELINEOFFSET, "Ballistic");
 
     // GUI
-    private Image backgroundImage = null;
-    private int lastAnalysationTime = -1;
     private Tank activeTank;
-    private ArrayList<int[]> shotBlocks = new ArrayList<int[]>();
-    private ArrayList<int[]> tankBlocks = new ArrayList<int[]>();
-    private int power = 100; //93; //72;
-    private int angle = 112; //32; //45;
-    private ArrayList<int[]> fieldLine = new ArrayList<int[]>();
 
     private TankAimGui() {
         setBorder(BorderFactory.createLineBorder(Color.black));
 
         // initialization
-        menuItems.add(screenShotButton);
-        menuItems.add(analyseButton);
         menuItems.add(tankSwitch);
-        menuItems.add(ballisticShot);
         menuItems.add(decPower);
         menuItems.add(showPower);
         menuItems.add(incPower);
@@ -65,57 +50,54 @@ class TankAimGui extends JPanel {
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
+                Analyser analyser = Analyser.getInstance();
                 if (e.getY() < INTERACT_MARGIN_TOP) {
-                    if (screenShotButton.inside(e)) {
-                        captureScreen();
-                    } else if (analyseButton.inside(e)) {
-                        analyseImage();
-                    } else if (tankSwitch.inside(e)) {
-                        if (activeTank == greenTank) {
-                            activeTank = redTank;
-                            tankSwitch.setColor(Color.RED);
-                            tankSwitch.setText("Red");
+                    if (tankSwitch.inside(e)) {
+                        if (activeTank == analyser.getP1Tank()) {
+                            activeTank = analyser.getP2Tank();
                         } else {
-                            activeTank = greenTank;
-                            tankSwitch.setColor(Color.GREEN);
-                            tankSwitch.setText("Green");
+                            activeTank = analyser.getP1Tank();
                         }
-                        repaint();
-                    } else if (ballisticShot.inside(e)) {
-                        simulateDefaultShot();
+                        tankSwitch.setColor(activeTank.getColor());
+                        tankSwitch.setText(activeTank.getName());
                     } else if (decPower.inside(e)) {
+                        int power = analyser.getPower();
                         if (power <= 0) {
                             power = 100;
                         } else {
                             power--;
                         }
-                        simulateDefaultShot();
+                        analyser.setPower(power);
                     } else if (incPower.inside(e)) {
+                        int power = analyser.getPower();
                         if (power >= 100) {
                             power = 0;
                         } else {
                             power++;
                         }
-                        simulateDefaultShot();
+                        analyser.setPower(power);
                     } else if (decAngle.inside(e)) {
+                        int angle = analyser.getAngle();
                         if (angle <= 0) {
                             angle = 359;
                         } else {
                             angle--;
                         }
-                        simulateDefaultShot();
+                        analyser.setAngle(angle);
                     } else if (incAngle.inside(e)) {
+                        int angle = analyser.getAngle();
                         if (angle >= 359) {
                             angle = 0;
                         } else {
                             angle++;
                         }
-                        simulateDefaultShot();
+                        analyser.setAngle(angle);
                     } else if (changeImageButton.inside(e)) {
-                        Analyser.getInstance().loadImagePool(true);
+                        analyser.loadImagePool(true);
                     }
                 } else {
-                    moveTank(activeTank, e.getX(), e.getY());
+                    //moveTank(activeTank, e.getX(), e.getY());
+                    log.warn("Review this method: moveTank()");
                 }
             }
         });
@@ -123,15 +105,16 @@ class TankAimGui extends JPanel {
         addMouseMotionListener(new MouseAdapter() {
             public void mouseDragged(MouseEvent e) {
                 if (e.getY() > INTERACT_MARGIN_TOP) {
-                    moveTank(activeTank, e.getX(), e.getY());
+                    //moveTank(activeTank, e.getX(), e.getY());
+                    log.warn("Review this method: moveTank()");
                 }
             }
         });
 
         // initialization
-        tankSwitch.setText("Green");
-        tankSwitch.setColor(Color.GREEN);
-        activeTank = greenTank;
+        activeTank = Analyser.getInstance().getP1Tank();
+        tankSwitch.setColor(activeTank.getColor());
+        tankSwitch.setText(activeTank.getName());
     }
 
     public static TankAimGui getInstance() {
@@ -142,6 +125,7 @@ class TankAimGui extends JPanel {
         return instance;
     }
 
+    // todo move to Analyser/Screener, rewrite to switch source ImagePool/Screener
     private void captureScreen() {
         log.trace("captureScreen()");
         // sikuli call
@@ -155,24 +139,7 @@ class TankAimGui extends JPanel {
         th.start();
     }
 
-    private void analyseImage() {
-        long start = (new Date()).getTime();
-
-        // todo replace with getting Analyser autogenerated data
-        Analyser analyser = Analyser.getInstance();
-        analyser.loadImage(backgroundImage);
-        fieldLine = analyser.searchFieldLine();
-        tankBlocks = analyser.searchTank();
-        greenTank.setCenter(tankBlocks.get(0)[0], tankBlocks.get(0)[1]);
-        shotBlocks = analyser.simulateBallisticShot(angle, power, greenTank.getCenterX(), greenTank.getCenterY());
-
-        long end = (new Date()).getTime();
-        end = end - start;
-        analyseButton.setText(String.format("Analyse (%d)", end));
-        System.out.println(String.format("Panel: Analysation took %f seconds.", (double) end / 1000));
-        repaint();
-    }
-
+    // todo revrite to be compatible with separated Analyser
     private void moveTank(Tank tank, int x, int y) {
         // repaint only if moved
         if ((tank.getCenterX() != x) || (tank.getCenterY() != y)) {
@@ -193,9 +160,6 @@ class TankAimGui extends JPanel {
             yy = Math.max(INTERACT_MARGIN_TOP + tank.getHeight() / 2, yy);
 
             tank.setCenter(xx, yy);
-
-            simulateDefaultShot();
-            repaint();
         }
     }
 
@@ -209,48 +173,52 @@ class TankAimGui extends JPanel {
         // Draw background
         drawBackground(g);
 
-        // Draw fieldLine
-        g.setColor(Color.MAGENTA);
-        for (int[] fl : fieldLine) {
-            g.drawRect(fl[0], fl[1], fl[2], fl[3]);
-        }
-
         // Draw buttons
-        screenShotButton.paintSprite(g);
-        showPower.setText(String.format("P:%d", power));
-        showAngle.setText(String.format("A:%d", angle));
+        drawButtons(g);
+
+        // Draw fieldLine
+        drawFieldLineBlocks(g);
+
+        // Draw Tanks
+        Analyser.getInstance().getP1Tank().paintSprite(g);
+        Analyser.getInstance().getP2Tank().paintSprite(g);
+
+        // Draw trajectory
+        drawTrajectory(g);
+    }
+
+    private void drawTrajectory(Graphics g) {
+        g.setColor(activeTank.getColor());
+        for (int[] t : Analyser.getInstance().getTrajectoryBlocks()) {
+            g.fillOval(t[0], t[1], t[2], t[3]);
+        }
+    }
+
+    private void drawButtons(Graphics g) {
+        showPower.setText(String.format("P:%d", Analyser.getInstance().getPower()));
+        showAngle.setText(String.format("A:%d", Analyser.getInstance().getAngle()));
         for (MenuItem item : menuItems) {
             item.paintSprite(g);
         }
+    }
 
-        // Draw Tanks
-        greenTank.paintSprite(g);
-        //redTank.paintSprite(g);
-        for (int[] t : tankBlocks) {
-            g.setColor(Color.ORANGE);
-            g.fillRect(t[0] - t[2] / 2, t[1] - t[3] / 2, t[2], t[3]);
-        }
-
-        // Draw shotblocks
-        g.setColor(Color.ORANGE);
-        for (int[] shot : shotBlocks) {
-            g.fillOval(shot[0], shot[1], shot[2], shot[3]);
+    private void drawFieldLineBlocks(Graphics g) {
+        g.setColor(Color.MAGENTA);
+        for (int[] f : Analyser.getInstance().getFieldLineBlocks()) {
+            g.drawRect(f[0], f[1], f[2], f[3]);
         }
     }
 
     private void drawBackground(Graphics g) {
         log.trace("drawBackground(Graphics g)");
-        backgroundImage = Analyser.getInstance().getImage();
+        Image backgroundImage = Analyser.getInstance().getImage();
         if (backgroundImage != null) {
             g.drawImage(backgroundImage, 0, 0, null);
-        } else log.warn("Background image is null");
-    }
-
-    private void simulateDefaultShot() {
-        Analyser analyser = Analyser.getInstance();
-        analyser.loadImage(backgroundImage);
-        shotBlocks = analyser.simulateBallisticShot(angle, power, greenTank.getCenterX(), greenTank.getCenterY());
-        analyser.getTankColor(greenTank);
-        repaint();
+        } else {
+            log.warn("Background image is null");
+            setBackground(Color.DARK_GRAY);
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), INTERACT_MARGIN_TOP);
+        }
     }
 }
