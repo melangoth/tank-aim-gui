@@ -26,10 +26,14 @@ public class Analizer implements Runnable {
         return instance;
     }
 
-    public void loadImage(Image image) {
-        this.image = (BufferedImage) image;
+    public void loadImage(BufferedImage image) {
+        this.image = image;
         this.fieldWidth = this.image.getWidth();
         this.fieldHeight = this.image.getHeight();
+    }
+
+    public void loadImage(Image image) {
+        loadImage((BufferedImage) image);
     }
 
     private Color getAverageColor(int[] block) {
