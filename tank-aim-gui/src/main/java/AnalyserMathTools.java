@@ -55,6 +55,13 @@ public class AnalyserMathTools extends AnalyserImageTools {
         return Math.tan(Math.PI / 180 * alpha);
     }
 
+    protected double[] getMuzzlePoint(double angle, double r) {
+        double x = cos(angle) * r;
+        double y = sin(angle) * r;
+
+        return new double[]{x, y};
+    }
+
     protected int[] getAvgCoords(ArrayList<int[]> blocks) {
         double x = 0;
         double y = 0;

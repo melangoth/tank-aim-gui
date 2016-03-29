@@ -9,7 +9,13 @@ import java.util.ArrayList;
 public class Analyser extends AnalyserMathTools implements Runnable {
     final static Logger log = Logger.getLogger(Analyser.class);
     private static Analyser instance = null;
-    private ArrayList<int[]> fieldBlocks = new ArrayList<int[]>();
+    // todo repalce ints with Rectangle, or something more useful
+    private ArrayList<int[]> fieldLineBlocks = new ArrayList<int[]>();
+    private Tank p1Tank = new Tank(Color.GREEN, "P1Tank");
+    private Tank p2Tank = new Tank(Color.ORANGE, "P2Tank");
+    private ArrayList<int[]> trajectoryBlocks = new ArrayList<int[]>();
+    private int angle = 45;
+    private int power = 75;
 
     private Analyser() {
         log.trace("Analyser()");
@@ -33,14 +39,23 @@ public class Analyser extends AnalyserMathTools implements Runnable {
             try {
                 Thread.sleep(1000);
                 log.trace("Analyser hearthbeat.");
+
+                fullAnalysation();
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
             }
         }
     }
 
-    public ArrayList<int[]> searchFieldLine() {
-        ArrayList<int[]> fieldLine = new ArrayList<int[]>();
+    private void fullAnalysation() {
+        // todo repalce assignmenta with in-method assignmenta
+        searchFieldLine();
+        searchTank(p1Tank);
+        calculateTrajectory(p1Tank);
+    }
+
+    private void searchFieldLine() {
+        ArrayList<int[]> searchBlocks = new ArrayList<int[]>();
 
         int lookW = 5;
         int lookH = 5;
@@ -55,7 +70,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
             for (int y = endY; y >= startY; y -= lookH) {
                 int[] block = new int[]{x, y, lookW, lookH};
                 Color c = getAverageColor(block);
-                boolean fl = isField(c);
+                boolean fl = colorIsGround(c);
 
                 /*System.out.println(String.format("Analyser: x:%d y:%d rgb:%s f:%s", x, y,
                         String.format("%d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()), fl));*/
@@ -63,27 +78,57 @@ public class Analyser extends AnalyserMathTools implements Runnable {
                 if (!fl) break;
                 lastBlock = block;
             }
-            fieldLine.add(lastBlock);
+            searchBlocks.add(lastBlock);
         }
 
-        this.fieldBlocks = fieldLine;
-        return fieldLine;
+        fieldLineBlocks = searchBlocks;
     }
 
-    private boolean isField(Color c) {
-        int r = c.getRed();
-        int g = c.getGreen();
-        int b = c.getBlue();
-        return isIn(r, 50, 100) && isIn(g, 120, 170) && isIn(b, 200, 255) || isIn(r, 20, 80) && isIn(g, 60, 140) && isIn(b, 100, 220);
+    private void searchTank(Tank tank) {
+        ArrayList<int[]> searchBlocks = new ArrayList<int[]>();
+
+        int blocksize = 30;
+        int tanksize = 15;
+
+        // search block above fieldline blocks
+        for (int[] f : fieldLineBlocks) {
+            int startX = f[0] + f[2] / 2 - blocksize / 2;
+            int startY = f[1] - blocksize + 10;
+
+            if (0 < startX && startX <= imageWidth - blocksize
+                    && 0 < startY && startY <= imageHeight - blocksize) {
+
+                int[] block = new int[]{startX, startY, blocksize, blocksize};
+                //tanks.add(block);
+
+                // search tank in search block
+                for (int i = 0; i <= blocksize - tanksize; i++) {
+                    for (int j = 0; j <= blocksize - tanksize; j++) {
+                        int[] tankBlock = new int[]{i + block[0], j + block[1], tanksize, tanksize};
+
+                        Color c = getAverageColor(tankBlock);
+
+                        if (isIn(c.getRed(), 0, 60) && isIn(c.getGreen(), 90, 130) && isIn(c.getBlue(), 80, 120)) {
+                            searchBlocks.add(tankBlock);
+                        }
+                    }
+                }
+            }
+        }
+
+        int[] avg = getAvgCoords(searchBlocks);
+
+        tank.setCenter(avg[0], avg[1]);
     }
 
-    public ArrayList<int[]> simulateBallisticShot(int angle, int v, int tankX, int tankY) {
+    private void calculateTrajectory(Tank tank) {
         ArrayList<int[]> shotBlocks;
 
-        double[] T = getTurretEnd(angle, 18);
+        double[] muzzlePoint = getMuzzlePoint(angle, 18);
 
         double g = 10;
         int a = angle;
+        int v = power;
         double px = 2; // px/paint
         int paints = 1000;
 
@@ -103,8 +148,8 @@ public class Analyser extends AnalyserMathTools implements Runnable {
             double x = px * p;
             double y = x * tan(a) - g / (2 * p(v, 2) * p(cos(a), 2)) * p(x, 2);
 
-            int coordX = (int) (x * directionX + tankX + T[0]);
-            int coordY = (int) (y * directionY + tankY + (T[1] * -1));
+            int coordX = (int) (x * directionX + tank.getCenterX() + muzzlePoint[0]);
+            int coordY = (int) (y * directionY + tank.getCenterY() + (muzzlePoint[1] * directionY));
 
             if (coordX < 0) coordX = coordX * -1;
             if (coordX > imageWidth) coordX = imageWidth - (coordX - imageWidth);
@@ -115,61 +160,45 @@ public class Analyser extends AnalyserMathTools implements Runnable {
                     shotSize, shotSize});
         }
 
-        return shotBlocks;
+        trajectoryBlocks = shotBlocks;
     }
 
-    private double[] getTurretEnd(double angle, double r) {
-        double x = cos(angle) * r;
-        double y = sin(angle) * r;
-
-        return new double[]{x, y};
+    private boolean colorIsGround(Color c) {
+        int r = c.getRed();
+        int g = c.getGreen();
+        int b = c.getBlue();
+        return isIn(r, 50, 100) && isIn(g, 120, 170) && isIn(b, 200, 255) || isIn(r, 20, 80) && isIn(g, 60, 140) && isIn(b, 100, 220);
     }
 
-    // todo: remove this, or comment out reference!
-    public void getTankColor(Tank tank) {
-        Color c = getAverageColor(new int[]{tank.getX(), tank.getCenterY(), tank.getWidth(), tank.getHeight()});
-        System.out.println(String.format("Tank AVG Color: %d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()));
+    public synchronized ArrayList<int[]> getFieldLineBlocks() {
+        return fieldLineBlocks;
     }
 
-    public ArrayList<int[]> searchTank() {
-        ArrayList<int[]> tanks = new ArrayList<int[]>();
-
-        int blocksize = 30;
-        int tanksize = 15;
-
-        // search block above fieldline blocks
-        for (int[] f : fieldBlocks) {
-            int startX = f[0] + f[2] / 2 - blocksize / 2;
-            int startY = f[1] - blocksize + 10;
-
-            if (0 < startX && startX <= imageWidth - blocksize
-                    && 0 < startY && startY <= imageHeight - blocksize) {
-
-                int[] block = new int[]{startX, startY, blocksize, blocksize};
-                //tanks.add(block);
-
-                // search tank in search block
-                for (int i = 0; i <= blocksize - tanksize; i++) {
-                    for (int j = 0; j <= blocksize - tanksize; j++) {
-                        int[] tank = new int[]{i + block[0], j + block[1], tanksize, tanksize};
-
-                        Color c = getAverageColor(tank);
-
-                        if (isIn(c.getRed(), 0, 60) && isIn(c.getGreen(), 90, 130) && isIn(c.getBlue(), 80, 120)) {
-                            tanks.add(tank);
-                        }
-                    }
-                }
-            }
-        }
-
-        int[] avg = getAvgCoords(tanks);
-        tanks.clear();
-        tanks.add(new int[]{avg[0], avg[1], 5, 5});
-
-        System.out.println("Returning tank blocks: " + tanks.size());
-
-        return tanks;
+    public synchronized Tank getP1Tank() {
+        return p1Tank;
     }
 
+    public synchronized Tank getP2Tank() {
+        return p2Tank;
+    }
+
+    public synchronized ArrayList<int[]> getTrajectoryBlocks() {
+        return trajectoryBlocks;
+    }
+
+    public synchronized int getAngle() {
+        return angle;
+    }
+
+    public synchronized void setAngle(int angle) {
+        this.power = angle;
+    }
+
+    public synchronized int getPower() {
+        return power;
+    }
+
+    public synchronized void setPower(int power) {
+        this.power = power;
+    }
 }
