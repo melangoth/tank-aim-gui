@@ -140,6 +140,9 @@ class MyPanel extends JPanel {
 
     private void captureScreen() {
         // sikuli call
+        Screener.getInstance().findRegion();
+        analImage = Screener.getInstance().captureRegion();
+        repaint();
     }
 
     private void loadImage(String path) {

@@ -7,6 +7,10 @@ public class Runner {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Win());
+
+        /*Screener scr = Screener.getInstance();
+        scr.findRegion();
+        scr.captureRegion();*/
     }
 
     // todo implement realtime screen capturing
