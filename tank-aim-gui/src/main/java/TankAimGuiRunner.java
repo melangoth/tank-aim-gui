@@ -1,9 +1,12 @@
+import org.apache.log4j.Logger;
+
 import javax.swing.*;
 
 /**
  * Created by develrage
  */
 public class TankAimGuiRunner {
+    final static Logger log = Logger.getLogger(TankAimGuiRunner.class);
 
     public static void main(String[] args) {
         Analizer analizer = Analizer.getInstance();
@@ -11,6 +14,20 @@ public class TankAimGuiRunner {
         analizerThread.start();
 
         SwingUtilities.invokeLater(new Win());
+
+        Thread guiRefresherThread = new Thread(new Runnable() {
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(500);
+                        TankAimGui.getInstance().repaint();
+                    } catch (InterruptedException e) {
+                        log.warn("Thread sleep interrupted.", e);
+                    }
+                }
+            }
+        });
+        guiRefresherThread.start();
 
         /*Screener scr = Screener.getInstance();
         scr.findRegion();
