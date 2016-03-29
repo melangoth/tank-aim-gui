@@ -43,6 +43,7 @@ class MyPanel extends JPanel {
     private int lastAnalTime = -1;
     private Tank activeTank;
     private ArrayList<int[]> shotBlocks = new ArrayList<int[]>();
+    private ArrayList<int[]> tankBlocks = new ArrayList<int[]>();
     private int power = 100; //93; //72;
     private int angle = 112; //32; //45;
     private ArrayList<int[]> fieldLine = new ArrayList<int[]>();
@@ -155,18 +156,11 @@ class MyPanel extends JPanel {
 
         Analizer anal = new Analizer(analImage);
         fieldLine = anal.searchFieldLine();
+        tankBlocks = anal.searchTank();
 
         int end = (new Date()).compareTo(start);
         analizeButton.setText(String.format("Analize (%d)", end));
         repaint();
-    }
-
-    private void sleepSome(int i) {
-        try {
-            Thread.sleep(i);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     private void moveTank(Tank tank, int x, int y) {
@@ -223,8 +217,12 @@ class MyPanel extends JPanel {
         }
 
         // Draw Tanks
-        greenTank.paintSprite(g);
-        redTank.paintSprite(g);
+        //greenTank.paintSprite(g);
+        //redTank.paintSprite(g);
+        for (int[] t : tankBlocks) {
+            g.setColor(Color.BLUE);
+            g.drawRect(t[0], t[1], t[2], t[3]);
+        }
 
         // Draw shotblocks
         g.setColor(Color.ORANGE);
@@ -240,6 +238,7 @@ class MyPanel extends JPanel {
     private void simulateDefaultShot() {
         Analizer analizer = new Analizer(analImage);
         shotBlocks = analizer.simulateBallisticShot(angle, power, greenTank.getCenterX(), greenTank.getCenterY());
+        analizer.getTankColor(greenTank);
         repaint();
     }
 }

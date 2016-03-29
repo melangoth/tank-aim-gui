@@ -6,8 +6,8 @@ import java.awt.*;
 class Tank {
     private int xPos = 50;
     private int yPos = 50;
-    private int width = 20;
-    private int height = 20;
+    private int width = 15;
+    private int height = 15;
     private Color color;
 
     public Tank(Color color) {

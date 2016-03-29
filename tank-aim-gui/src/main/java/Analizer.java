@@ -10,6 +10,7 @@ public class Analizer {
     private BufferedImage image;
     private int fieldWidth;
     private int fieldHeight;
+    private ArrayList<int[]> fieldBlocks = new ArrayList<int[]>();
 
     public Analizer(Image image) {
         this.image = (BufferedImage) image;
@@ -61,8 +62,8 @@ public class Analizer {
                 Color c = getAverageColor(block);
                 boolean fl = isField(c);
 
-                System.out.println(String.format("Analizer: x:%d y:%d rgb:%s f:%s", x, y,
-                        String.format("%d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()), fl));
+                /*System.out.println(String.format("Analizer: x:%d y:%d rgb:%s f:%s", x, y,
+                        String.format("%d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()), fl));*/
 
                 if (!fl) break;
                 lastBlock = block;
@@ -70,6 +71,7 @@ public class Analizer {
             fieldLine.add(lastBlock);
         }
 
+        this.fieldBlocks = fieldLine;
         return fieldLine;
     }
 
@@ -98,7 +100,7 @@ public class Analizer {
         int v = power;
         double g = 10;
         int a = angle;
-        double px = 5; // px/paint
+        double px = 1; // px/paint
         int paints = 1000;
 
         int directionX = 1;
@@ -154,5 +156,34 @@ public class Analizer {
 
     private double tan(double alpha) {
         return Math.tan(Math.PI / 180 * alpha);
+    }
+
+    public void getTankColor(Tank tank) {
+        Color c = getAverageColor(new int[] {tank.getX(), tank.getCenterY(), tank.getWidth(), tank.getHeight()});
+        System.out.println(String.format("Tank ACG Color: %d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()));
+    }
+
+    public ArrayList<int[]> searchTank() {
+        ArrayList<int[]> tanks = new ArrayList<int[]>();
+
+        int blocksize = 30;
+        int tanksize = 15;
+
+        // search block above fieldline blocks
+        for (int[] f : fieldBlocks) {
+            int startX = f[0] + f[2]/2 - blocksize/2;
+            int startY = f[1] - blocksize + 5;
+
+            if (0 < startX && startX <= fieldWidth-blocksize
+                    && 0 < startY && startY <= fieldHeight-blocksize) {
+
+                int[] block = new int[] {startX, startY, blocksize, blocksize};
+                tanks.add(block);
+            }
+        }
+
+        System.out.println("Returning tank blocks: " + tanks.size());
+
+        return tanks;
     }
 }
