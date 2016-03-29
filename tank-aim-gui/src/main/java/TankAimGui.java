@@ -1,18 +1,14 @@
 import org.apache.log4j.Logger;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by develrage on 2016. 03. 25..
+ * Created by develrage
  */
 class TankAimGui extends JPanel {
     final static Logger log = Logger.getLogger(TankAimGui.class);
@@ -27,15 +23,12 @@ class TankAimGui extends JPanel {
     // Sprites
     Tank greenTank = new Tank(Color.GREEN, 77, 131);
     Tank redTank = new Tank(Color.RED, 660, 222);
-    // Fields
-    String[] fields = new String[]{"images/img6.png", "images/img7.png", "images/img8.png"};
-    int fieldPointer = 1; // field background
     // Menu buttons
     ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>();
     MenuItem screenShotButton = new MenuItem(new Rectangle(10, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "ScrShot");
     MenuItem analizeButton = new MenuItem(new Rectangle(95, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "Analize");
     MenuItem tankSwitch = new MenuItem(new Rectangle(180, MLINE_FIRSTLINE, 50, 20), 2, MLINE_BASELINEOFFSET);
-    MenuItem getFieldButton = new MenuItem(new Rectangle(240, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "Get Field");
+    MenuItem changeImageButton = new MenuItem(new Rectangle(240, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "Chng Img");
     MenuItem decPower = new MenuItem(new Rectangle(460, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
     MenuItem showPower = new MenuItem(new Rectangle(475, MLINE_FIRSTLINE, 35, 20), 2, MLINE_BASELINEOFFSET, "");
     MenuItem incPower = new MenuItem(new Rectangle(510, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
@@ -44,8 +37,8 @@ class TankAimGui extends JPanel {
     MenuItem incAngle = new MenuItem(new Rectangle(585, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
     MenuItem ballisticShot = new MenuItem(new Rectangle(610, MLINE_FIRSTLINE, 50, 20), 2, MLINE_BASELINEOFFSET, "Ballistic");
 
-    // analizing
-    private Image analImage = null;
+    // GUI
+    private Image backgroundImage = null;
     private int lastAnalTime = -1;
     private Tank activeTank;
     private ArrayList<int[]> shotBlocks = new ArrayList<int[]>();
@@ -68,7 +61,7 @@ class TankAimGui extends JPanel {
         menuItems.add(decAngle);
         menuItems.add(showAngle);
         menuItems.add(incAngle);
-        menuItems.add(getFieldButton);
+        menuItems.add(changeImageButton);
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -118,8 +111,8 @@ class TankAimGui extends JPanel {
                             angle++;
                         }
                         simulateDefaultShot();
-                    } else if (getFieldButton.inside(e)) {
-                        changeField();
+                    } else if (changeImageButton.inside(e)) {
+                        Analizer.getInstance().loadImagePool(true);
                     }
                 } else {
                     moveTank(activeTank, e.getX(), e.getY());
@@ -139,8 +132,6 @@ class TankAimGui extends JPanel {
         tankSwitch.setText("Green");
         tankSwitch.setColor(Color.GREEN);
         activeTank = greenTank;
-
-        loadImage(fields[fieldPointer]);
     }
 
     public static TankAimGui getInstance() {
@@ -152,54 +143,24 @@ class TankAimGui extends JPanel {
     }
 
     private void captureScreen() {
+        log.trace("captureScreen()");
         // sikuli call
         Thread th = new Thread(new Runnable() {
             public void run() {
                 Screener.getInstance().findRegion();
-                BufferedImage img = Screener.getInstance().captureRegion();
-                if (img != null) {
-                    log.info("Screen captured.");
-                    TankAimGui.getInstance().refreshImage(img);
-                } else {
-                    log.warn("Failed to get screen capture.");
-                }
+                Screener.getInstance().captureRegion();
             }
         });
 
         th.start();
     }
 
-    public synchronized void refreshImage(BufferedImage img) {
-        loadImage(img);
-    }
-
-    private void loadImage(BufferedImage img) {
-        analImage = img;
-        analizeImage();
-    }
-
-    private void loadImage(String path) {
-        File f = new File(path);
-        try {
-            analImage = ImageIO.read(f);
-            analizeImage();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void changeField() {
-        fieldPointer++;
-        if (fieldPointer >= fields.length) fieldPointer = 0;
-        loadImage(fields[fieldPointer]);
-        repaint();
-    }
-
     private void analizeImage() {
         long start = (new Date()).getTime();
 
+        // todo replace with getting Analizer autogenerated data
         Analizer analizer = Analizer.getInstance();
-        analizer.loadImage(analImage);
+        analizer.loadImage(backgroundImage);
         fieldLine = analizer.searchFieldLine();
         tankBlocks = analizer.searchTank();
         greenTank.setCenter(tankBlocks.get(0)[0], tankBlocks.get(0)[1]);
@@ -278,12 +239,16 @@ class TankAimGui extends JPanel {
     }
 
     private void drawBackground(Graphics g) {
-        g.drawImage(analImage, 0, 0, null);
+        log.trace("drawBackground(Graphics g)");
+        backgroundImage = Analizer.getInstance().getImage();
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, null);
+        } else log.warn("Background image is null");
     }
 
     private void simulateDefaultShot() {
         Analizer analizer = Analizer.getInstance();
-        analizer.loadImage(analImage);
+        analizer.loadImage(backgroundImage);
         shotBlocks = analizer.simulateBallisticShot(angle, power, greenTank.getCenterX(), greenTank.getCenterY());
         analizer.getTankColor(greenTank);
         repaint();
