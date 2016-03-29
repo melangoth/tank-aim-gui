@@ -179,6 +179,8 @@ public class Analizer {
 
                 int[] block = new int[] {startX, startY, blocksize, blocksize};
                 tanks.add(block);
+
+                // search tank in search block
             }
         }
 
