@@ -1,25 +1,14 @@
 import org.apache.log4j.Logger;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
  * Created by develrage
  */
-public class Analizer implements Runnable {
+public class Analizer extends AnalizerMathTools implements Runnable {
     final static Logger log = Logger.getLogger(Analizer.class);
     private static Analizer instance = null;
-    // Fields
-    String[] imagePool = new String[]{"images/img6.png", "images/img7.png", "images/img8.png"};
-    int imagePoolPointer = 0;
-    // Runtime
-    private BufferedImage image = null;
-    private int fieldWidth;
-    private int fieldHeight;
     private ArrayList<int[]> fieldBlocks = new ArrayList<int[]>();
 
     private Analizer() {
@@ -50,76 +39,15 @@ public class Analizer implements Runnable {
         }
     }
 
-    public void loadImage(BufferedImage image) {
-        log.trace("loadImage(BufferedImage image)");
-        this.image = image;
-        this.fieldWidth = this.image.getWidth();
-        this.fieldHeight = this.image.getHeight();
-    }
-
-    public void loadImage(Image image) {
-        log.trace("loadImage(Image image)");
-        loadImage((BufferedImage) image);
-    }
-
-    public void loadImage(String path) {
-        log.trace(String.format("loadImage(path=%s)", path));
-        File f = new File(path);
-        try {
-            loadImage(ImageIO.read(f));
-        } catch (IOException e) {
-            log.error(String.format("Failed to ImageIO.read(%s)", f.getPath()));
-        }
-    }
-
-    public synchronized void loadImagePool() {
-        loadImagePool(false);
-    }
-
-    public synchronized void loadImagePool(boolean rotate) {
-        log.trace(String.format("loadImagePool(rotate=%s)", rotate));
-        if (rotate) {
-            imagePoolPointer++;
-            if (imagePoolPointer >= imagePool.length) imagePoolPointer = 0;
-        }
-        loadImage(imagePool[imagePoolPointer]);
-    }
-
-    private Color getAverageColor(int[] block) {
-        int cR = 0;
-        int cG = 0;
-        int cB = 0;
-        int blocks = 0;
-
-        for (int i = 0; i < block[2]; i++) {
-            for (int j = 0; j < block[3]; j++) {
-                blocks++;
-                int x = i + block[0];
-                int y = j + block[1];
-
-                Color c = new Color(image.getRGB(x, y), true);
-                cR += c.getRed();
-                cG += c.getGreen();
-                cB += c.getBlue();
-            }
-        }
-
-        cR /= blocks;
-        cG /= blocks;
-        cB /= blocks;
-
-        return new Color(cR, cG, cB);
-    }
-
     public ArrayList<int[]> searchFieldLine() {
         ArrayList<int[]> fieldLine = new ArrayList<int[]>();
 
         int lookW = 5;
         int lookH = 5;
         int startX = 0;
-        int endX = image.getWidth() - lookW;
+        int endX = imageWidth - lookW;
         int startY = 0;
-        int endY = image.getHeight() - lookH;
+        int endY = imageHeight - lookH;
 
         for (int x = endX; x >= startX; x -= lookW) {
             int[] lastBlock = new int[]{-1};
@@ -147,10 +75,6 @@ public class Analizer implements Runnable {
         int g = c.getGreen();
         int b = c.getBlue();
         return isIn(r, 50, 100) && isIn(g, 120, 170) && isIn(b, 200, 255) || isIn(r, 20, 80) && isIn(g, 60, 140) && isIn(b, 100, 220);
-    }
-
-    private boolean isIn(int a, int l1, int l2) {
-        return (l1 <= a && a <= l2);
     }
 
     public ArrayList<int[]> simulateBallisticShot(int angle, int v, int tankX, int tankY) {
@@ -183,7 +107,7 @@ public class Analizer implements Runnable {
             int coordY = (int) (y * directionY + tankY + (T[1] * -1));
 
             if (coordX < 0) coordX = coordX * -1;
-            if (coordX > fieldWidth) coordX = fieldWidth - (coordX - fieldWidth);
+            if (coordX > imageWidth) coordX = imageWidth - (coordX - imageWidth);
 
             shotBlocks.add(new int[]{
                     coordX,
@@ -199,22 +123,6 @@ public class Analizer implements Runnable {
         double y = sin(angle) * r;
 
         return new double[]{x, y};
-    }
-
-    private double p(double base, double power) {
-        return Math.pow(base, power);
-    }
-
-    private double cos(double alpha) {
-        return Math.cos(Math.PI / 180 * alpha);
-    }
-
-    private double sin(double alpha) {
-        return Math.sin(Math.PI / 180 * alpha);
-    }
-
-    private double tan(double alpha) {
-        return Math.tan(Math.PI / 180 * alpha);
     }
 
     // todo: remove this, or comment out reference!
@@ -234,8 +142,8 @@ public class Analizer implements Runnable {
             int startX = f[0] + f[2] / 2 - blocksize / 2;
             int startY = f[1] - blocksize + 10;
 
-            if (0 < startX && startX <= fieldWidth - blocksize
-                    && 0 < startY && startY <= fieldHeight - blocksize) {
+            if (0 < startX && startX <= imageWidth - blocksize
+                    && 0 < startY && startY <= imageHeight - blocksize) {
 
                 int[] block = new int[]{startX, startY, blocksize, blocksize};
                 //tanks.add(block);
@@ -264,28 +172,4 @@ public class Analizer implements Runnable {
         return tanks;
     }
 
-    private int[] getAvgCoords(ArrayList<int[]> blocks) {
-        double x = 0;
-        double y = 0;
-
-        for (int[] b : blocks) {
-            x += b[0] + b[2] / 2;
-            y += b[1] + b[3] / 2;
-        }
-
-        x = x / blocks.size();
-        y = y / blocks.size();
-
-        return new int[]{(int) Math.round(x), (int) Math.round(y)};
-    }
-
-    public synchronized BufferedImage getImage() {
-        log.trace("getImage()");
-
-        if (image == null) {
-            log.warn("Image not set yet.");
-        }
-
-        return image;
-    }
 }
