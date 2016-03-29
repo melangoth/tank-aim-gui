@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 /**
- * Created by develrage on 2016. 03. 25..
+ * Created by develrage
  */
 public class Analizer implements Runnable {
     final static Logger log = Logger.getLogger(Analizer.class);
@@ -90,25 +90,18 @@ public class Analizer implements Runnable {
         int r = c.getRed();
         int g = c.getGreen();
         int b = c.getBlue();
-        if (isIn(r, 50, 100) && isIn(g, 120, 170) && isIn(b, 200, 255)) {
-            return true;
-        } else if (isIn(r, 20, 80) && isIn(g, 60, 140) && isIn(b, 100, 220)) {
-            return true;
-        } else {
-            return false;
-        }
+        return isIn(r, 50, 100) && isIn(g, 120, 170) && isIn(b, 200, 255) || isIn(r, 20, 80) && isIn(g, 60, 140) && isIn(b, 100, 220);
     }
 
     private boolean isIn(int a, int l1, int l2) {
         return (l1 <= a && a <= l2);
     }
 
-    public ArrayList<int[]> simulateBallisticShot(int angle, int power, int tankX, int tankY) {
+    public ArrayList<int[]> simulateBallisticShot(int angle, int v, int tankX, int tankY) {
         ArrayList<int[]> shotBlocks;
 
-        double[] T = getTurretEnd(angle, tankX, tankY, 18);
+        double[] T = getTurretEnd(angle, 18);
 
-        int v = power;
         double g = 10;
         int a = angle;
         double px = 2; // px/paint
@@ -145,7 +138,7 @@ public class Analizer implements Runnable {
         return shotBlocks;
     }
 
-    private double[] getTurretEnd(double angle, double tankX, double tankY, double r) {
+    private double[] getTurretEnd(double angle, double r) {
         double x = cos(angle) * r;
         double y = sin(angle) * r;
 
@@ -168,9 +161,10 @@ public class Analizer implements Runnable {
         return Math.tan(Math.PI / 180 * alpha);
     }
 
+    // todo: remove this, or comment out reference!
     public void getTankColor(Tank tank) {
         Color c = getAverageColor(new int[]{tank.getX(), tank.getCenterY(), tank.getWidth(), tank.getHeight()});
-//        System.out.println(String.format("Tank AVG Color: %d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()));
+        System.out.println(String.format("Tank AVG Color: %d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()));
     }
 
     public ArrayList<int[]> searchTank() {
@@ -230,10 +224,11 @@ public class Analizer implements Runnable {
     }
 
     public void run() {
+        //noinspection InfiniteLoopStatement
         while (true) {
             try {
-                Thread.currentThread().sleep(1000);
-                log.info(String.format("Analizer hearthbeat."));
+                Thread.currentThread().wait(1000);
+                log.info("Analizer hearthbeat.");
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
             }
