@@ -157,6 +157,8 @@ class MyPanel extends JPanel {
         Analizer anal = new Analizer(analImage);
         fieldLine = anal.searchFieldLine();
         tankBlocks = anal.searchTank();
+        greenTank.setCenter(tankBlocks.get(0)[0], tankBlocks.get(0)[1]);
+        shotBlocks = anal.simulateBallisticShot(angle, power, greenTank.getCenterX(), greenTank.getCenterY());
 
         int end = (new Date()).compareTo(start);
         analizeButton.setText(String.format("Analize (%d)", end));
@@ -217,11 +219,11 @@ class MyPanel extends JPanel {
         }
 
         // Draw Tanks
-        //greenTank.paintSprite(g);
+        greenTank.paintSprite(g);
         //redTank.paintSprite(g);
         for (int[] t : tankBlocks) {
-            g.setColor(Color.BLUE);
-            g.drawRect(t[0], t[1], t[2], t[3]);
+            g.setColor(Color.ORANGE);
+            g.fillRect(t[0] - t[2] / 2, t[1] - t[3] / 2, t[2], t[3]);
         }
 
         // Draw shotblocks

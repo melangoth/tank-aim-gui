@@ -6,7 +6,6 @@ import java.util.ArrayList;
  * Created by develrage on 2016. 03. 25..
  */
 public class Analizer {
-    private final static int SEARCHLIMIT = 500;
     private BufferedImage image;
     private int fieldWidth;
     private int fieldHeight;
@@ -159,7 +158,7 @@ public class Analizer {
     }
 
     public void getTankColor(Tank tank) {
-        Color c = getAverageColor(new int[] {tank.getX(), tank.getCenterY(), tank.getWidth(), tank.getHeight()});
+        Color c = getAverageColor(new int[]{tank.getX(), tank.getCenterY(), tank.getWidth(), tank.getHeight()});
         System.out.println(String.format("Tank ACG Color: %d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()));
     }
 
@@ -171,21 +170,51 @@ public class Analizer {
 
         // search block above fieldline blocks
         for (int[] f : fieldBlocks) {
-            int startX = f[0] + f[2]/2 - blocksize/2;
-            int startY = f[1] - blocksize + 5;
+            int startX = f[0] + f[2] / 2 - blocksize / 2;
+            int startY = f[1] - blocksize + 10;
 
-            if (0 < startX && startX <= fieldWidth-blocksize
-                    && 0 < startY && startY <= fieldHeight-blocksize) {
+            if (0 < startX && startX <= fieldWidth - blocksize
+                    && 0 < startY && startY <= fieldHeight - blocksize) {
 
-                int[] block = new int[] {startX, startY, blocksize, blocksize};
-                tanks.add(block);
+                int[] block = new int[]{startX, startY, blocksize, blocksize};
+                //tanks.add(block);
 
                 // search tank in search block
+                for (int i = 0; i <= blocksize - tanksize; i++) {
+                    for (int j = 0; j <= blocksize - tanksize; j++) {
+                        int[] tank = new int[]{i + block[0], j + block[1], tanksize, tanksize};
+
+                        Color c = getAverageColor(tank);
+
+                        if (isIn(c.getRed(), 0, 60) && isIn(c.getGreen(), 90, 130) && isIn(c.getBlue(), 80, 120)) {
+                            tanks.add(tank);
+                        }
+                    }
+                }
             }
         }
+
+        int[] avg = getAvgCoords(tanks);
+        tanks.clear();
+        tanks.add(new int[]{avg[0], avg[1], 5, 5});
 
         System.out.println("Returning tank blocks: " + tanks.size());
 
         return tanks;
+    }
+
+    private int[] getAvgCoords(ArrayList<int[]> blocks) {
+        double x = 0;
+        double y = 0;
+
+        for (int[] b : blocks) {
+            x += b[0] + b[2] / 2;
+            y += b[1] + b[3] / 2;
+        }
+
+        x = x / blocks.size();
+        y = y / blocks.size();
+
+        return new int[]{(int) Math.round(x), (int) Math.round(y)};
     }
 }
