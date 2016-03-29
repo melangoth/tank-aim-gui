@@ -1,7 +1,7 @@
 import javax.swing.*;
 
 /**
- * Created by develrage on 2016. 03. 25..
+ * Created by develrage
  */
 public class TankAimGuiRunner {
 
@@ -10,7 +10,7 @@ public class TankAimGuiRunner {
         Thread analizerThread = new Thread(analizer);
         analizerThread.start();
 
-        //SwingUtilities.invokeLater(new Win());
+        SwingUtilities.invokeLater(new Win());
 
         /*Screener scr = Screener.getInstance();
         scr.findRegion();
