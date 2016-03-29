@@ -49,11 +49,13 @@ public class Analizer {
         int lookW = 5;
         int lookH = 5;
         int startX = 0;
-        int endX = image.getWidth()-lookW;
+        int endX = image.getWidth() - lookW;
         int startY = 0;
         int endY = image.getHeight() - lookH;
 
         for (int x = endX; x >= startX; x -= lookW) {
+            int[] lastBlock = new int[]{-1};
+
             for (int y = endY; y >= startY; y -= lookH) {
                 int[] block = new int[]{x, y, lookW, lookH};
                 Color c = getAverageColor(block);
@@ -62,8 +64,10 @@ public class Analizer {
                 System.out.println(String.format("Analizer: x:%d y:%d rgb:%s f:%s", x, y,
                         String.format("%d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()), fl));
 
-                if (fl) fieldLine.add(block);
+                if (!fl) break;
+                lastBlock = block;
             }
+            fieldLine.add(lastBlock);
         }
 
         return fieldLine;
