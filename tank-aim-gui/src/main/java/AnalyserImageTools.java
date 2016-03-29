@@ -9,8 +9,8 @@ import java.io.IOException;
 /**
  * Created by develrage
  */
-public class AnalizerImageTools {
-    final static Logger log = Logger.getLogger(AnalizerImageTools.class);
+public class AnalyserImageTools {
+    final static Logger log = Logger.getLogger(AnalyserImageTools.class);
     protected BufferedImage image = null;
     protected int imageWidth;
     protected int imageHeight;

@@ -1,14 +1,13 @@
 import org.apache.log4j.Logger;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 /**
  * Created by develrage
  */
-public class AnalizerMathTools extends AnalizerImageTools {
-    final static Logger log = Logger.getLogger(AnalizerMathTools.class);
+public class AnalyserMathTools extends AnalyserImageTools {
+    final static Logger log = Logger.getLogger(AnalyserMathTools.class);
 
     protected Color getAverageColor(int[] block) {
         int cR = 0;

@@ -6,19 +6,19 @@ import java.util.ArrayList;
 /**
  * Created by develrage
  */
-public class Analizer extends AnalizerMathTools implements Runnable {
-    final static Logger log = Logger.getLogger(Analizer.class);
-    private static Analizer instance = null;
+public class Analyser extends AnalyserMathTools implements Runnable {
+    final static Logger log = Logger.getLogger(Analyser.class);
+    private static Analyser instance = null;
     private ArrayList<int[]> fieldBlocks = new ArrayList<int[]>();
 
-    private Analizer() {
-        log.trace("Analizer()");
+    private Analyser() {
+        log.trace("Analyser()");
     }
 
-    public static Analizer getInstance() {
+    public static Analyser getInstance() {
         log.trace("getInstance()");
         if (instance == null) {
-            instance = new Analizer();
+            instance = new Analyser();
         }
 
         return instance;
@@ -32,7 +32,7 @@ public class Analizer extends AnalizerMathTools implements Runnable {
         while (true) {
             try {
                 Thread.sleep(1000);
-                log.trace("Analizer hearthbeat.");
+                log.trace("Analyser hearthbeat.");
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
             }
@@ -57,7 +57,7 @@ public class Analizer extends AnalizerMathTools implements Runnable {
                 Color c = getAverageColor(block);
                 boolean fl = isField(c);
 
-                /*System.out.println(String.format("Analizer: x:%d y:%d rgb:%s f:%s", x, y,
+                /*System.out.println(String.format("Analyser: x:%d y:%d rgb:%s f:%s", x, y,
                         String.format("%d/%d/%d", c.getRed(), c.getGreen(), c.getBlue()), fl));*/
 
                 if (!fl) break;

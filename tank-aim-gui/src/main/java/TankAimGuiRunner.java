@@ -9,7 +9,7 @@ public class TankAimGuiRunner {
     final static Logger log = Logger.getLogger(TankAimGuiRunner.class);
 
     public static void main(String[] args) {
-        Analizer analizer = Analizer.getInstance();
+        Analyser analizer = Analyser.getInstance();
         Thread analizerThread = new Thread(analizer);
         analizerThread.start();
 
