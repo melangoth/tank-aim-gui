@@ -125,20 +125,6 @@ class TankAimGui extends JPanel {
         return instance;
     }
 
-    // todo move to Analyser/Screener, rewrite to switch source ImagePool/Screener
-    private void captureScreen() {
-        log.trace("captureScreen()");
-        // sikuli call
-        Thread th = new Thread(new Runnable() {
-            public void run() {
-                Screener.getInstance().findRegion();
-                Screener.getInstance().captureRegion();
-            }
-        });
-
-        th.start();
-    }
-
     // todo revrite to be compatible with separated Analyser
     private void moveTank(Tank tank, int x, int y) {
         // repaint only if moved
@@ -167,11 +153,14 @@ class TankAimGui extends JPanel {
         return new Dimension(800, 540);
     }
 
-    public void paintComponent(Graphics g) {
+    public synchronized void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         // Draw background
         drawBackground(g);
+
+        // Draw tracer blocks
+        drawTracerBlocks(g);
 
         // Draw buttons
         drawButtons(g);
@@ -185,6 +174,13 @@ class TankAimGui extends JPanel {
 
         // Draw trajectory
         drawTrajectory(g);
+    }
+
+    private void drawTracerBlocks(Graphics g) {
+        g.setColor(Color.BLUE);
+        for (int[] t : Analyser.getInstance().getTracerBlocks()) {
+            g.drawRect(t[0], t[1], t[2], t[3]);
+        }
     }
 
     private void drawTrajectory(Graphics g) {
