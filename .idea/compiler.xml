@@ -22,13 +22,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="anim-pilot" />
         <module name="tank-aim-bot" />
         <module name="tank-aim-gui" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="anim-pilot" target="1.5" />
       <module name="tank-aim-bot" target="1.5" />
       <module name="tank-aim-gui" target="1.5" />
     </bytecodeTargetLevel>

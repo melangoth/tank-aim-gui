@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/anim-pilot/anim-pilot.iml" filepath="$PROJECT_DIR$/anim-pilot/anim-pilot.iml" />
       <module fileurl="file://$PROJECT_DIR$/tank-aim-bot.iml" filepath="$PROJECT_DIR$/tank-aim-bot.iml" />
       <module fileurl="file://$PROJECT_DIR$/tank-aim-gui/tank-aim-gui.iml" filepath="$PROJECT_DIR$/tank-aim-gui/tank-aim-gui.iml" />
     </modules>
