@@ -28,12 +28,13 @@ public class TankAimGuiRunner {
         Screener scr = Screener.getInstance();
         Thread screenerThread = new Thread(scr);
 
-        screenerThread.start();
+//        screenerThread.start();
         analizerThread.start();
         SwingUtilities.invokeLater(new Win());
         guiRefresherThread.start();
     }
 
+    // todo review synchronized methods, variables!
     // todo make greenTank auto-search, make red-tank manual-search, switch also trajectory
     // todo implement realtime screen capturing
     // todo Wind: wind=x; power=max; angle= angle +/- (x/2/10)
