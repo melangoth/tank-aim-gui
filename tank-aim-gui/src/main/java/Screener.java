@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 /**
- * Created by develrage on 2016.03.29.
+ * Created by develrage
  */
 public class Screener extends SikulixFrame implements Runnable {
     final static Logger log = Logger.getLogger(Screener.class);
@@ -82,7 +82,7 @@ public class Screener extends SikulixFrame implements Runnable {
             //ind.highlight(2);
 
             region = new Rectangle(ind.getX() + 4,
-                    ind.getY() + 21 + 10,
+                    ind.getY() + 21 + 6,
                     800,
                     540);
 
