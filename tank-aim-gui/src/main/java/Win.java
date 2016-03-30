@@ -7,12 +7,11 @@ import javax.swing.*;
  */
 public class Win implements Runnable {
     final static Logger log = Logger.getLogger(Win.class);
-    private JFrame frame;
 
     public void createAndShowGUI() {
         log.info("Created GUI on EDT? " +
                 SwingUtilities.isEventDispatchThread());
-        frame = new JFrame("Tank Aim GUI");
+        JFrame frame = new JFrame("Tank Aim GUI");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.add(TankAimGui.getInstance());
         frame.pack();

@@ -14,6 +14,7 @@ public class TankAimGuiRunner {
 
         Thread guiRefresherThread = new Thread(new Runnable() {
             public void run() {
+                //noinspection InfiniteLoopStatement
                 while (true) {
                     try {
                         TankAimGui.getInstance().repaint();
@@ -34,7 +35,7 @@ public class TankAimGuiRunner {
         guiRefresherThread.start();
     }
 
-    // todo review synchronized methods, variables!
+    // todo use capture on-demand from Analyser, do not capture continously
     // todo make greenTank auto-search, make red-tank manual-search, switch also trajectory
     // todo implement realtime screen capturing
     // todo Wind: wind=x; power=max; angle= angle +/- (x/2/10)

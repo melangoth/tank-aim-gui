@@ -11,13 +11,13 @@ import java.io.File;
 public class Screener extends SikulixFrame implements Runnable {
     final static Logger log = Logger.getLogger(Screener.class);
     private static Screener instance = null;
+    @SuppressWarnings("FieldCanBeLocal")
     private final float defSimilarity = 0.7f;
     private final Pattern indicator;
+    private final Object captureLock = new Object();
+    private final Object regionLock = new Object();
     private Rectangle region = null;
     private BufferedImage imageCaptured = null;
-
-    private Object captureLock = new Object();
-    private Object regionLock = new Object();
 
     private Screener() {
         File f = new File("images");

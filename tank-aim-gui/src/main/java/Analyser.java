@@ -9,6 +9,10 @@ import java.util.ArrayList;
 public class Analyser extends AnalyserMathTools implements Runnable {
     final static Logger log = Logger.getLogger(Analyser.class);
     private static Analyser instance = null;
+    private final Object tracerLock = new Object();
+    private final Object fieldLineLock = new Object();
+    private final Object trajectoryLock = new Object();
+    private final Object tankLock = new Object();
     // todo repalce ints with Rectangle, or something more useful
     private ArrayList<int[]> fieldLineBlocks = new ArrayList<int[]>();
     private Tank p1Tank = new Tank(Color.GREEN, "P1Tank");
@@ -17,11 +21,6 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     private ArrayList<int[]> tracerBlocks = new ArrayList<int[]>();
     private int angle = 45;
     private int power = 75;
-
-    private Object tracerLock = new Object();
-    private Object fieldLineLock = new Object();
-    private Object trajectoryLock = new Object();
-    private Object tankLock = new Object();
 
     private Analyser() {
         log.trace("Analyser()");

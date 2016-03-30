@@ -126,6 +126,7 @@ class TankAimGui extends JPanel {
     }
 
     // todo revrite to be compatible with separated Analyser
+    @SuppressWarnings("unused")
     private void moveTank(Tank tank, int x, int y) {
         // repaint only if moved
         if ((tank.getCenterX() != x) || (tank.getCenterY() != y)) {
