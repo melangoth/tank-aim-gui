@@ -38,10 +38,9 @@ public class Screener extends SikulixFrame implements Runnable {
         //noinspection InfiniteLoopStatement
         while (true) {
             try {
-                Thread.sleep(1000);
                 log.trace("Screener hearthbeat.");
-
                 captureRegion();
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
             }

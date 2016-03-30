@@ -32,15 +32,20 @@ public class Analyser extends AnalyserMathTools implements Runnable {
 
     public void run() {
         log.debug("run()");
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            log.warn("Sleep interrupted.", e);
+        }
 
         //noinspection InfiniteLoopStatement
         while (true) {
             try {
-                Thread.sleep(1000);
                 log.trace("Analyser hearthbeat.");
 //                loadImagePool();
                 loadImageCaptured();
                 fullAnalysation();
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
             }

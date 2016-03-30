@@ -40,7 +40,6 @@ public class AnalyserImageTools {
     }
 
     public synchronized void loadImageCaptured() {
-        Screener.getInstance().findRegion();
         BufferedImage img = Screener.getInstance().getImageCaptured();
         if (img != null) {
             loadImage(img);

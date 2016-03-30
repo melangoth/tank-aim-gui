@@ -16,8 +16,8 @@ public class TankAimGuiRunner {
             public void run() {
                 while (true) {
                     try {
-                        Thread.sleep(200);
                         TankAimGui.getInstance().repaint();
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         log.warn("Thread sleep interrupted.", e);
                     }
@@ -28,10 +28,10 @@ public class TankAimGuiRunner {
         Screener scr = Screener.getInstance();
         Thread screenerThread = new Thread(scr);
 
+        screenerThread.start();
         analizerThread.start();
         SwingUtilities.invokeLater(new Win());
         guiRefresherThread.start();
-        screenerThread.start();
     }
 
     // todo make greenTank auto-search, make red-tank manual-search, switch also trajectory
