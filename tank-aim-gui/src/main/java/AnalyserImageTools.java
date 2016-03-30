@@ -14,14 +14,18 @@ public class AnalyserImageTools {
     protected BufferedImage image = null;
     protected int imageWidth;
     protected int imageHeight;
-    protected String[] imagePool = new String[]{"images/img6.png", "images/img7.png", "images/img8.png"};
+    protected String[] imagePool = new String[]{"images/img5.png", "images/img6.png", "images/img7.png", "images/img8.png"};
     protected int imagePoolPointer = 0;
+
+    protected Object imageLock = new Object();
 
     public synchronized void loadImage(BufferedImage image) {
         log.trace("loadImage(BufferedImage image)");
-        this.image = image;
-        this.imageWidth = this.image.getWidth();
-        this.imageHeight = this.image.getHeight();
+        synchronized (imageLock) {
+            this.image = image;
+            this.imageWidth = this.image.getWidth();
+            this.imageHeight = this.image.getHeight();
+        }
     }
 
     public synchronized void loadImage(Image image) {

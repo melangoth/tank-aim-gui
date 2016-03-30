@@ -14,8 +14,14 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     private Tank p1Tank = new Tank(Color.GREEN, "P1Tank");
     private Tank p2Tank = new Tank(Color.ORANGE, "P2Tank");
     private ArrayList<int[]> trajectoryBlocks = new ArrayList<int[]>();
+    private ArrayList<int[]> tracerBlocks = new ArrayList<int[]>();
     private int angle = 45;
     private int power = 75;
+
+    private Object tracerLock = new Object();
+    private Object fieldLineLock = new Object();
+    private Object trajectoryLock = new Object();
+    private Object tankLock = new Object();
 
     private Analyser() {
         log.trace("Analyser()");
@@ -42,8 +48,8 @@ public class Analyser extends AnalyserMathTools implements Runnable {
         while (true) {
             try {
                 log.trace("Analyser hearthbeat.");
-//                loadImagePool();
-                loadImageCaptured();
+                loadImagePool();
+//                loadImageCaptured();
                 fullAnalysation();
                 Thread.sleep(200);
             } catch (InterruptedException e) {
@@ -52,7 +58,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
         }
     }
 
-    private void fullAnalysation() {
+    private synchronized void fullAnalysation() {
         searchFieldLine();
         searchTank(p1Tank);
         calculateTrajectory(p1Tank);
@@ -90,7 +96,9 @@ public class Analyser extends AnalyserMathTools implements Runnable {
             if (lastBlock[0] > -1) searchBlocks.add(lastBlock);
         }
 
-        fieldLineBlocks = searchBlocks;
+        synchronized (fieldLineLock) {
+            fieldLineBlocks = searchBlocks;
+        }
     }
 
     private void searchTank(Tank tank) {
@@ -100,11 +108,18 @@ public class Analyser extends AnalyserMathTools implements Runnable {
         }
 
         ArrayList<int[]> searchBlocks = new ArrayList<int[]>();
+        synchronized (tracerLock) {
+            tracerBlocks.clear();
+        }
 
         int blocksize = 30;
         int tanksize = 15;
 
         // search block above fieldline blocks
+        ArrayList<int[]> fieldLineBlocks;
+        synchronized (fieldLineLock) {
+            fieldLineBlocks = this.fieldLineBlocks;
+        }
         for (int[] f : fieldLineBlocks) {
             int startX = f[0] + f[2] / 2 - blocksize / 2;
             int startY = f[1] - blocksize + 10;
@@ -113,12 +128,17 @@ public class Analyser extends AnalyserMathTools implements Runnable {
                     && 0 < startY && startY <= imageHeight - blocksize) {
 
                 int[] block = new int[]{startX, startY, blocksize, blocksize};
-                //tanks.add(block);
+                synchronized (tracerLock) {
+                    tracerBlocks.add(block);
+                }
 
                 // search tank in search block
                 for (int i = 0; i <= blocksize - tanksize; i++) {
                     for (int j = 0; j <= blocksize - tanksize; j++) {
                         int[] tankBlock = new int[]{i + block[0], j + block[1], tanksize, tanksize};
+                        synchronized (tracerLock) {
+//                            tracerBlocks.add(tankBlock);
+                        }
 
                         Color c = getAverageColor(tankBlock);
 
@@ -132,19 +152,21 @@ public class Analyser extends AnalyserMathTools implements Runnable {
 
         int[] avg = getAvgCoords(searchBlocks);
 
-        tank.setCenter(avg[0], avg[1]);
+        synchronized (tankLock) {
+            tank.setCenter(avg[0], avg[1]);
+        }
     }
 
     private void calculateTrajectory(Tank tank) {
         ArrayList<int[]> shotBlocks;
-
-        double[] muzzlePoint = getMuzzlePoint(angle, 18);
 
         double g = 10;
         int a = angle;
         int v = power;
         double px = 2; // px/paint
         int paints = 1000;
+
+        double[] muzzlePoint = getMuzzlePoint(a, 18);
 
         int directionX = 1;
         int directionY = -1;
@@ -174,7 +196,9 @@ public class Analyser extends AnalyserMathTools implements Runnable {
                     shotSize, shotSize});
         }
 
-        trajectoryBlocks = shotBlocks;
+        synchronized (trajectoryLock) {
+            trajectoryBlocks = shotBlocks;
+        }
     }
 
     private boolean colorIsGround(Color c) {
@@ -185,19 +209,27 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     }
 
     public synchronized ArrayList<int[]> getFieldLineBlocks() {
-        return fieldLineBlocks;
+        synchronized (fieldLineLock) {
+            return fieldLineBlocks;
+        }
     }
 
     public synchronized Tank getP1Tank() {
-        return p1Tank;
+        synchronized (tankLock) {
+            return p1Tank;
+        }
     }
 
     public synchronized Tank getP2Tank() {
-        return p2Tank;
+        synchronized (tankLock) {
+            return p2Tank;
+        }
     }
 
     public synchronized ArrayList<int[]> getTrajectoryBlocks() {
-        return trajectoryBlocks;
+        synchronized (trajectoryLock) {
+            return trajectoryBlocks;
+        }
     }
 
     public synchronized int getAngle() {
@@ -205,7 +237,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     }
 
     public synchronized void setAngle(int angle) {
-        this.power = angle;
+        this.angle = angle;
     }
 
     public synchronized int getPower() {
@@ -214,5 +246,11 @@ public class Analyser extends AnalyserMathTools implements Runnable {
 
     public synchronized void setPower(int power) {
         this.power = power;
+    }
+
+    public synchronized ArrayList<int[]> getTracerBlocks() {
+        synchronized (tracerLock) {
+            return tracerBlocks;
+        }
     }
 }
