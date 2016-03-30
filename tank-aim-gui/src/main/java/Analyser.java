@@ -40,7 +40,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
                 log.trace("Analyser hearthbeat.");
 //                loadImagePool();
                 loadImageCaptured();
-//                fullAnalysation();
+                fullAnalysation();
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
             }
