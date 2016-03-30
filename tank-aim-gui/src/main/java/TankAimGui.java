@@ -22,7 +22,7 @@ class TankAimGui extends JPanel {
 
     // Menu buttons
     // todo rewrite to be able to stack menuitems, make them relative to each other
-    ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>();
+    ArrayList<MenuItem> menuItems = new ArrayList<>();
     MenuItem tankSwitch = new MenuItem(new Rectangle(180, MLINE_FIRSTLINE, 50, 20), 2, MLINE_BASELINEOFFSET);
     MenuItem changeImageButton = new MenuItem(new Rectangle(240, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "Chng Img");
     MenuItem decPower = new MenuItem(new Rectangle(460, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " -");

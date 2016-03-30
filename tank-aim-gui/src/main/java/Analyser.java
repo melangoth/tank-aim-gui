@@ -14,11 +14,11 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     private final Object trajectoryLock = new Object();
     private final Object tankLock = new Object();
     // todo repalce ints with Rectangle, or something more useful
-    private ArrayList<int[]> fieldLineBlocks = new ArrayList<int[]>();
+    private ArrayList<int[]> fieldLineBlocks = new ArrayList<>();
     private Tank p1Tank = new Tank(Color.GREEN, "P1Tank");
     private Tank p2Tank = new Tank(Color.ORANGE, "P2Tank");
-    private ArrayList<int[]> trajectoryBlocks = new ArrayList<int[]>();
-    private ArrayList<int[]> tracerBlocks = new ArrayList<int[]>();
+    private ArrayList<int[]> trajectoryBlocks = new ArrayList<>();
+    private ArrayList<int[]> tracerBlocks = new ArrayList<>();
     private int angle = 45;
     private int power = 75;
 
@@ -69,7 +69,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
             return;
         }
 
-        ArrayList<int[]> searchBlocks = new ArrayList<int[]>();
+        ArrayList<int[]> searchBlocks = new ArrayList<>();
 
         int lookW = 5;
         int lookH = 5;
@@ -106,7 +106,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
             return;
         }
 
-        ArrayList<int[]> searchBlocks = new ArrayList<int[]>();
+        ArrayList<int[]> searchBlocks = new ArrayList<>();
         synchronized (tracerLock) {
             tracerBlocks.clear();
         }
@@ -178,7 +178,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
         }
 
         int shotSize = 2;
-        shotBlocks = new ArrayList<int[]>();
+        shotBlocks = new ArrayList<>();
         for (int p = 0; p <= paints + 1; p++) {
             double x = px * p;
             double y = x * tan(a) - g / (2 * p(v, 2) * p(cos(a), 2)) * p(x, 2);

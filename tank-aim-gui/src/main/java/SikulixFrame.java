@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Created by develrage on 2015.09.01..
+ * Created by develrage
  */
 public class SikulixFrame {
     final static Logger log = Logger.getLogger(SikulixFrame.class);

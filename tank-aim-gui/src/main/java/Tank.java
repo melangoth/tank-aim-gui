@@ -1,7 +1,7 @@
 import java.awt.*;
 
 /**
- * Created by develrage on 2016. 03. 25..
+ * Created by develrage
  */
 class Tank extends AnalyserMathTools {
     private String name;

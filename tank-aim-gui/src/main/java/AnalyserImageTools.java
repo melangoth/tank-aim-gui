@@ -11,13 +11,12 @@ import java.io.IOException;
  */
 public class AnalyserImageTools {
     final static Logger log = Logger.getLogger(AnalyserImageTools.class);
+    protected final Object imageLock = new Object();
     protected BufferedImage image = null;
     protected int imageWidth;
     protected int imageHeight;
     protected String[] imagePool = new String[]{"images/img5.png", "images/img6.png", "images/img7.png", "images/img8.png"};
     protected int imagePoolPointer = 0;
-
-    protected Object imageLock = new Object();
 
     public synchronized void loadImage(BufferedImage image) {
         log.trace("loadImage(BufferedImage image)");

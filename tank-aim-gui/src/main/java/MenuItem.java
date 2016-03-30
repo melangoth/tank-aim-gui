@@ -2,7 +2,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 
 /**
- * Created by develrage on 2016. 03. 25..
+ * Created by develrage
  */
 public class MenuItem {
     private final int padding;
@@ -53,11 +53,7 @@ public class MenuItem {
     }
 
     public boolean inside(MouseEvent e) {
-        if (e.getX() >= getX() && e.getX() <= getX() + getWidth() && e.getY() >= getY() && e.getY() <= getY() + getHeight()) {
-            return true;
-        } else {
-            return false;
-        }
+        return e.getX() >= getX() && e.getX() <= getX() + getWidth() && e.getY() >= getY() && e.getY() <= getY() + getHeight();
     }
 
     public void setColor(Color color) {
