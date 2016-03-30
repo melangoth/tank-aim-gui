@@ -39,6 +39,16 @@ public class AnalyserImageTools {
         }
     }
 
+    public synchronized void loadImageCaptured() {
+        Screener.getInstance().findRegion();
+        BufferedImage img = Screener.getInstance().getImageCaptured();
+        if (img != null) {
+            loadImage(img);
+        } else {
+            log.error("Failed to load captured image.");
+        }
+    }
+
     public synchronized void loadImagePool() {
         loadImagePool(false);
     }

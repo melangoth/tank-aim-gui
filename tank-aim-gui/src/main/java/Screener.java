@@ -8,12 +8,13 @@ import java.io.File;
 /**
  * Created by develrage on 2016.03.29.
  */
-public class Screener extends SikulixFrame {
+public class Screener extends SikulixFrame implements Runnable {
     final static Logger log = Logger.getLogger(Screener.class);
     private static Screener instance = null;
     private final float defSimilarity = 0.7f;
     private final Pattern indicator;
     private Rectangle region = null;
+    private BufferedImage imageCaptured = null;
 
     private Screener() {
         File f = new File("images");
@@ -30,20 +31,39 @@ public class Screener extends SikulixFrame {
         return instance;
     }
 
-    public synchronized BufferedImage captureRegion() {
-        BufferedImage capture = null;
+    public void run() {
+        log.debug("run()");
+        findRegion();
+
+        //noinspection InfiniteLoopStatement
+        while (true) {
+            try {
+                Thread.sleep(1000);
+                log.trace("Screener hearthbeat.");
+
+                captureRegion();
+            } catch (InterruptedException e) {
+                log.warn("Sleep interrupted.", e);
+            }
+        }
+    }
+
+    public synchronized BufferedImage getImageCaptured() {
+        return imageCaptured;
+    }
+
+    public synchronized void captureRegion() {
+        log.debug("Capturing region.");
 
         if (region != null) {
             try {
-                capture = new Robot().createScreenCapture(region);
+                imageCaptured = new Robot().createScreenCapture(region);
             } catch (AWTException e) {
                 log.warn("Error capturing screen.");
             }
         } else {
             log.warn("No screen region defined.");
         }
-
-        return capture;
     }
 
     public synchronized void findRegion() {

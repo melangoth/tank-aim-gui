@@ -32,15 +32,15 @@ public class Analyser extends AnalyserMathTools implements Runnable {
 
     public void run() {
         log.debug("run()");
-        loadImagePool();
 
         //noinspection InfiniteLoopStatement
         while (true) {
             try {
                 Thread.sleep(1000);
                 log.trace("Analyser hearthbeat.");
-
-                fullAnalysation();
+//                loadImagePool();
+                loadImageCaptured();
+//                fullAnalysation();
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
             }
@@ -48,13 +48,17 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     }
 
     private void fullAnalysation() {
-        // todo repalce assignmenta with in-method assignmenta
         searchFieldLine();
         searchTank(p1Tank);
         calculateTrajectory(p1Tank);
     }
 
     private void searchFieldLine() {
+        if (image == null) {
+            log.warn("searchFieldLine(): No image loaded.");
+            return;
+        }
+
         ArrayList<int[]> searchBlocks = new ArrayList<int[]>();
 
         int lookW = 5;
@@ -78,13 +82,18 @@ public class Analyser extends AnalyserMathTools implements Runnable {
                 if (!fl) break;
                 lastBlock = block;
             }
-            searchBlocks.add(lastBlock);
+            if (lastBlock[0] > -1) searchBlocks.add(lastBlock);
         }
 
         fieldLineBlocks = searchBlocks;
     }
 
     private void searchTank(Tank tank) {
+        if (image == null) {
+            log.warn("searchTank(): No image loaded.");
+            return;
+        }
+
         ArrayList<int[]> searchBlocks = new ArrayList<int[]>();
 
         int blocksize = 30;

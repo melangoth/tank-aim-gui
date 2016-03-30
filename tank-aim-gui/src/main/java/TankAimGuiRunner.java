@@ -11,9 +11,6 @@ public class TankAimGuiRunner {
     public static void main(String[] args) {
         Analyser analizer = Analyser.getInstance();
         Thread analizerThread = new Thread(analizer);
-        analizerThread.start();
-
-        SwingUtilities.invokeLater(new Win());
 
         Thread guiRefresherThread = new Thread(new Runnable() {
             public void run() {
@@ -27,11 +24,14 @@ public class TankAimGuiRunner {
                 }
             }
         });
-        guiRefresherThread.start();
 
-        /*Screener scr = Screener.getInstance();
-        scr.findRegion();
-        scr.captureRegion();*/
+        Screener scr = Screener.getInstance();
+        Thread screenerThread = new Thread(scr);
+
+        analizerThread.start();
+        SwingUtilities.invokeLater(new Win());
+        guiRefresherThread.start();
+        screenerThread.start();
     }
 
     // todo make greenTank auto-search, make red-tank manual-search, switch also trajectory
