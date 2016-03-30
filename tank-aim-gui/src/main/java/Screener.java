@@ -16,6 +16,9 @@ public class Screener extends SikulixFrame implements Runnable {
     private Rectangle region = null;
     private BufferedImage imageCaptured = null;
 
+    private Object captureLock = new Object();
+    private Object regionLock = new Object();
+
     private Screener() {
         File f = new File("images");
         ImagePath.add(f.getAbsolutePath());
@@ -23,7 +26,7 @@ public class Screener extends SikulixFrame implements Runnable {
         indicator = new Pattern("indicator.png");
     }
 
-    public synchronized static Screener getInstance() {
+    public static Screener getInstance() {
         if (instance == null) {
             instance = new Screener();
         }
@@ -48,7 +51,9 @@ public class Screener extends SikulixFrame implements Runnable {
     }
 
     public synchronized BufferedImage getImageCaptured() {
-        return imageCaptured;
+        synchronized (captureLock) {
+            return imageCaptured;
+        }
     }
 
     public synchronized void captureRegion() {
@@ -56,7 +61,13 @@ public class Screener extends SikulixFrame implements Runnable {
 
         if (region != null) {
             try {
-                imageCaptured = new Robot().createScreenCapture(region);
+                Rectangle region;
+                synchronized (regionLock) {
+                    region = this.region;
+                }
+                synchronized (captureLock) {
+                    imageCaptured = new Robot().createScreenCapture(region);
+                }
             } catch (AWTException e) {
                 log.warn("Error capturing screen.");
             }
@@ -78,21 +89,13 @@ public class Screener extends SikulixFrame implements Runnable {
             }
 
             log.info("Indicator found.");
-            //ind.highlight(2);
 
-            region = new Rectangle(ind.getX() + 4,
-                    ind.getY() + 21 + 6,
-                    800,
-                    540);
-
-            Region bigRegion = new Region(
-                    (int) region.getX(),
-                    (int) region.getY(),
-                    region.width,
-                    region.height,
-                    s);
-
-            //bigRegion.highlight(2);
+            synchronized (regionLock) {
+                region = new Rectangle(ind.getX() + 4,
+                        ind.getY() + 21 + 6,
+                        800,
+                        540);
+            }
             break;
         }
     }
