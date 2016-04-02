@@ -172,11 +172,7 @@ class TankAimGui extends JPanel {
         drawFieldLineBlocks(g);
 
         // Draw Tanks
-        Analyser.getInstance().getP1Tank().paintSprite(g);
-        Analyser.getInstance().getP2Tank().paintSprite(g);
-
-        // Draw trajectory
-        drawTrajectory(g);
+        drawTanks(g);
     }
 
     private void drawTracerBlocks(Graphics g) {
@@ -186,10 +182,15 @@ class TankAimGui extends JPanel {
         }
     }
 
-    private void drawTrajectory(Graphics g) {
-        g.setColor(Analyser.getInstance().getActiveTank().getColor());
-        for (int[] t : Analyser.getInstance().getTrajectoryBlocks()) {
-            g.fillOval(t[0], t[1], t[2], t[3]);
+    private void drawTanks(Graphics g) {
+        Tank[] tanks = new Tank[]{Analyser.getInstance().getP1Tank(), Analyser.getInstance().getP2Tank()};
+
+        for (Tank tank : tanks) {
+            g.setColor(tank.getColor());
+            tank.paintSprite(g);
+            for (int[] t : tank.getTrajectoryBlocks()) {
+                g.fillOval(t[0], t[1], t[2], t[3]);
+            }
         }
     }
 

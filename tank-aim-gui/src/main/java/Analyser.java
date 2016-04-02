@@ -11,11 +11,9 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     private static Analyser instance = null;
     private final Object tracerLock = new Object();
     private final Object fieldLineLock = new Object();
-    private final Object trajectoryLock = new Object();
     private final Object tankLock = new Object();
     // todo repalce ints with Rectangle, or something more useful
     private ArrayList<int[]> fieldLineBlocks;
-    private ArrayList<int[]> trajectoryBlocks;
     private ArrayList<int[]> tracerBlocks;
     private Tank p1Tank;
     private Tank p2Tank;
@@ -29,7 +27,6 @@ public class Analyser extends AnalyserMathTools implements Runnable {
         p2Tank = new Tank(Color.ORANGE, "P2Tank");
         activeTank = p1Tank;
         fieldLineBlocks = new ArrayList<>();
-        trajectoryBlocks = new ArrayList<>();
         tracerBlocks = new ArrayList<>();
     }
 
@@ -68,6 +65,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
         searchFieldLine();
         searchTank(p1Tank);
         calculateTrajectory(p1Tank);
+        calculateTrajectory(p2Tank);
     }
 
     private void searchFieldLine() {
@@ -202,9 +200,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
                     shotSize, shotSize});
         }
 
-        synchronized (trajectoryLock) {
-            trajectoryBlocks = shotBlocks;
-        }
+        tank.setTrajectoryBlocks(shotBlocks);
     }
 
     private boolean colorIsGround(Color c) {
@@ -229,12 +225,6 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     public synchronized Tank getP2Tank() {
         synchronized (tankLock) {
             return p2Tank;
-        }
-    }
-
-    public synchronized ArrayList<int[]> getTrajectoryBlocks() {
-        synchronized (trajectoryLock) {
-            return trajectoryBlocks;
         }
     }
 

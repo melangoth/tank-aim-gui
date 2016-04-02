@@ -1,19 +1,23 @@
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Created by develrage
  */
 class Tank extends AnalyserMathTools {
+    private final Object trajectoryLock = new Object();
     private String name;
     private int xPos = 400;
     private int yPos = 100;
     private int width = 15;
     private int height = 15;
     private Color color;
+    private ArrayList<int[]> trajectoryBlocks;
 
     public Tank(Color color, String name) {
         this.color = color;
         this.name = name;
+        trajectoryBlocks = new ArrayList<>();
     }
 
     public int getCenterX() {
@@ -77,5 +81,17 @@ class Tank extends AnalyserMathTools {
 
     public String getName() {
         return name;
+    }
+
+    public ArrayList<int[]> getTrajectoryBlocks() {
+        synchronized (trajectoryLock) {
+            return trajectoryBlocks;
+        }
+    }
+
+    public synchronized void setTrajectoryBlocks(ArrayList<int[]> trajectoryBlocks) {
+        synchronized (trajectoryLock) {
+            this.trajectoryBlocks = trajectoryBlocks;
+        }
     }
 }
