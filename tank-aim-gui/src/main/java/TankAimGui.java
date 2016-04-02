@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 /**
@@ -162,6 +163,9 @@ class TankAimGui extends JPanel {
         // Draw background
         drawBackground(g);
 
+        // Draw aim captures
+        drawAimCaptures(g);
+
         // Draw tracer blocks
 //        drawTracerBlocks(g);
 
@@ -173,6 +177,18 @@ class TankAimGui extends JPanel {
 
         // Draw Tanks
         drawTanks(g);
+    }
+
+    private void drawAimCaptures(Graphics g) {
+        BufferedImage img = Screener.getInstance().getAngleCaptured();
+        if (img != null) {
+            g.drawImage(img, showAngle.getX(), showAngle.getY() + showAngle.getHeight() + 2, null, null);
+        }
+
+        img = Screener.getInstance().getPowerCaptured();
+        if (img != null) {
+            g.drawImage(img, showPower.getX(), showPower.getY() + showPower.getHeight() + 2, null, null);
+        }
     }
 
     private void drawTracerBlocks(Graphics g) {
