@@ -14,17 +14,23 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     private final Object trajectoryLock = new Object();
     private final Object tankLock = new Object();
     // todo repalce ints with Rectangle, or something more useful
-    private ArrayList<int[]> fieldLineBlocks = new ArrayList<>();
-    private Tank p1Tank = new Tank(Color.GREEN, "P1Tank");
-    private Tank p2Tank = new Tank(Color.ORANGE, "P2Tank");
-    private Tank activeTank = p1Tank;
-    private ArrayList<int[]> trajectoryBlocks = new ArrayList<>();
-    private ArrayList<int[]> tracerBlocks = new ArrayList<>();
+    private ArrayList<int[]> fieldLineBlocks;
+    private ArrayList<int[]> trajectoryBlocks;
+    private ArrayList<int[]> tracerBlocks;
+    private Tank p1Tank;
+    private Tank p2Tank;
+    private Tank activeTank;
     private int angle = 45;
     private int power = 75;
 
     private Analyser() {
         log.trace("Analyser()");
+        p1Tank = new Tank(Color.GREEN, "P1Tank");
+        p2Tank = new Tank(Color.ORANGE, "P2Tank");
+        activeTank = p1Tank;
+        fieldLineBlocks = new ArrayList<>();
+        trajectoryBlocks = new ArrayList<>();
+        tracerBlocks = new ArrayList<>();
     }
 
     public static Analyser getInstance() {
