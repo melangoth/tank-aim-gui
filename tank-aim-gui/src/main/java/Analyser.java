@@ -51,8 +51,8 @@ public class Analyser extends AnalyserMathTools implements Runnable {
         while (true) {
             try {
                 log.trace("Analyser hearthbeat.");
-                loadImagePool();
-//                loadImageCaptured();
+//                loadImagePool();
+                loadImageCaptured();
                 fullAnalysation();
                 Thread.sleep(200);
             } catch (InterruptedException e) {

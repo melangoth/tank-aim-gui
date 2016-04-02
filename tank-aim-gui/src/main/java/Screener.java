@@ -44,9 +44,16 @@ public class Screener extends SikulixFrame implements Runnable {
         while (true) {
             try {
                 log.trace("Screener hearthbeat.");
-                captureRegion(rField, fieldCaptured);
-                captureRegion(rAngle, angleCaptured);
-                captureRegion(rPower, powerCaptured);
+
+                synchronized (captureLock) {
+                    fieldCaptured = captureRegion(rField);
+                }
+                synchronized (captureLock) {
+                    angleCaptured = captureRegion(rAngle);
+                }
+                synchronized (captureLock) {
+                    powerCaptured = captureRegion(rPower);
+                }
                 Thread.sleep(200);
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
@@ -54,41 +61,38 @@ public class Screener extends SikulixFrame implements Runnable {
         }
     }
 
-    public synchronized BufferedImage getFieldCaptured() {
+    public BufferedImage getFieldCaptured() {
         synchronized (captureLock) {
             return fieldCaptured;
         }
     }
 
-    public synchronized BufferedImage getAngleCaptured() {
+    public BufferedImage getAngleCaptured() {
         synchronized (captureLock) {
             return angleCaptured;
         }
     }
 
-    public synchronized BufferedImage getPowerCaptured() {
+    public BufferedImage getPowerCaptured() {
         synchronized (captureLock) {
             return powerCaptured;
         }
     }
 
-    public synchronized void captureRegion(Rectangle rect, BufferedImage img) {
-        log.debug("Capturing region.");
+    public synchronized BufferedImage captureRegion(Rectangle rect) {
+        log.trace("Capturing region.");
+        BufferedImage img = null;
 
         try {
-            synchronized (regionLock) {
-                if (rect != null) {
-                    synchronized (captureLock) {
-                        img = new Robot().createScreenCapture(rect);
-                    }
-                } else {
-                    log.warn("No screen region defined.");
-                }
+            if (rect != null) {
+                img = new Robot().createScreenCapture(rect);
+            } else {
+                log.warn("No screen region defined.");
             }
         } catch (AWTException e) {
             log.error("Error capturing screen.");
         }
-
+        return img;
     }
 
     public synchronized void findRegion() {
