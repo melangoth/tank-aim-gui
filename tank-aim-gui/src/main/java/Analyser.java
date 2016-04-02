@@ -90,6 +90,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
         this.angle = -1;
         this.power = -1;
 
+        // todo NegativeArraySizeException on blank captures
         if (angle != null) {
             for (DigitMap map : angleRecognizer.extractDigitMapsFromImage(angle)) {
                 int digit = angleRecognizer.getDigitCollection().findDigit(map);

@@ -35,6 +35,8 @@ public class TankAimGuiRunner {
         guiRefresherThread.start();
     }
 
+    // todo add button to relocate window
+    // todo improve tank search (main problem: drops)
     // todo use capture on-demand from Analyser, do not capture continously
     // todo Wind: wind=x; power=max; angle= angle +/- (x/2/10)
 }
