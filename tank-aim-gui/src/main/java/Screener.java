@@ -16,7 +16,9 @@ public class Screener extends SikulixFrame implements Runnable {
     private final Pattern indicator;
     private final Object captureLock = new Object();
     private final Object regionLock = new Object();
-    private Rectangle region = null;
+    private Rectangle rField = null;
+    private Rectangle rPower = null;
+    private Rectangle rAngle = null;
     private BufferedImage imageCaptured = null;
 
     private Screener() {
@@ -57,23 +59,23 @@ public class Screener extends SikulixFrame implements Runnable {
     }
 
     public synchronized void captureRegion() {
-        log.debug("Capturing region.");
+        log.debug("Capturing regions.");
 
-        if (region != null) {
-            try {
-                Rectangle region;
-                synchronized (regionLock) {
-                    region = this.region;
-                }
-                synchronized (captureLock) {
-                    imageCaptured = new Robot().createScreenCapture(region);
-                }
-            } catch (AWTException e) {
-                log.warn("Error capturing screen.");
+        try {
+            synchronized (regionLock) {
+                for (Rectangle r : new Rectangle[]{rField, rAngle, rPower})
+                    if (r != null) {
+                        synchronized (captureLock) {
+                            imageCaptured = new Robot().createScreenCapture(r);
+                        }
+                    } else {
+                        log.warn("No screen region defined.");
+                    }
             }
-        } else {
-            log.warn("No screen region defined.");
+        } catch (AWTException e) {
+            log.error("Error capturing screen.");
         }
+
     }
 
     public synchronized void findRegion() {
@@ -91,11 +93,19 @@ public class Screener extends SikulixFrame implements Runnable {
             log.info("Indicator found.");
 
             synchronized (regionLock) {
-                region = new Rectangle(ind.getX() + 4,
+                rField = new Rectangle(ind.getX() + 4,
                         ind.getY() + 21 + 6,
                         800,
                         540);
+                rPower = new Rectangle(rField.x + 303, rField.y + rField.height + 8, 30, 18);
+                rAngle = new Rectangle(rPower.x, rPower.y + 26, rPower.width, rPower.height);
             }
+
+//            ind.highlight(1);
+//            new Region(rField).highlight(1);
+//            new Region(rPower).highlight(1);
+//            new Region(rAngle).highlight(3);
+
             break;
         }
     }

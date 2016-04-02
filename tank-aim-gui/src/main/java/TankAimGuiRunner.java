@@ -1,7 +1,5 @@
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
-
 /**
  * Created by develrage
  */
@@ -29,13 +27,12 @@ public class TankAimGuiRunner {
         Screener scr = Screener.getInstance();
         Thread screenerThread = new Thread(scr);
 
-//        screenerThread.start();
-        analizerThread.start();
-        SwingUtilities.invokeLater(new Win());
-        guiRefresherThread.start();
+        screenerThread.start();
+//        analizerThread.start();
+//        SwingUtilities.invokeLater(new Win());
+//        guiRefresherThread.start();
     }
 
     // todo use capture on-demand from Analyser, do not capture continously
-    // todo make greenTank auto-search, make red-tank manual-search, switch also trajectory
     // todo Wind: wind=x; power=max; angle= angle +/- (x/2/10)
 }
