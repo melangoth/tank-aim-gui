@@ -115,8 +115,8 @@ public class Screener extends SikulixFrame implements Runnable {
                         ind.getY() + 21 + 6,
                         800,
                         540);
-                rPower = new Rectangle(rField.x + 303, rField.y + rField.height + 8, 30, 18);
-                rAngle = new Rectangle(rPower.x, rPower.y + 26, rPower.width, rPower.height);
+                rPower = new Rectangle(rField.x + 303, rField.y + rField.height + 10, 28, 16);
+                rAngle = new Rectangle(rPower.x, rPower.y + 27, rPower.width, rPower.height);
             }
 
 //            ind.highlight(1);
