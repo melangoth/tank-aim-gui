@@ -1,7 +1,9 @@
+import com.develrage.birdocr.DigitMap;
 import com.develrage.birdocr.Recognition;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -22,14 +24,16 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     private Tank activeTank;
     private int angle = 45;
     private int power = 75;
-    private Recognition rec = null;
+    private Recognition powerRecognizer = null;
+    private Recognition angleRecognizer = null;
 
     private Analyser() {
         log.trace("Analyser()");
 
         // init
         try {
-            rec = new Recognition(Recognition.OcrMap.TANK, "images/TANK.json");
+            powerRecognizer = new Recognition(Recognition.OcrMap.TANKP, "images/TANKP.json");
+            angleRecognizer = new Recognition(Recognition.OcrMap.TANKA, "images/TANKA.json");
         } catch (IOException e) {
             log.error("Failed to load OcrMap!");
         }
@@ -80,7 +84,43 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     }
 
     private void readAimValues() {
-        log.debug("Reading aim values...");
+        BufferedImage angle = Screener.getInstance().getAngleCaptured();
+        BufferedImage power = Screener.getInstance().getPowerCaptured();
+        String digits = "";
+        this.angle = -1;
+        this.power = -1;
+
+        if (angle != null) {
+            for (DigitMap map : angleRecognizer.extractDigitMapsFromImage(angle)) {
+                int digit = angleRecognizer.getDigitCollection().findDigit(map);
+                digits += Integer.toString(digit);
+            }
+            try {
+                this.angle = Integer.parseInt(digits);
+            } catch (NumberFormatException e) {
+                this.angle = -1;
+            } finally {
+                digits = "";
+            }
+        } else {
+            log.debug("Failed to get captured angle.");
+        }
+
+        if (power != null) {
+            for (DigitMap map : powerRecognizer.extractDigitMapsFromImage(power)) {
+                int digit = powerRecognizer.getDigitCollection().findDigit(map);
+                digits += Integer.toString(digit);
+            }
+            try {
+                this.power = Integer.parseInt(digits);
+            } catch (NumberFormatException e) {
+                this.power = -1;
+            }
+        } else {
+            log.debug("Failed to get captured power.");
+        }
+
+//        log.debug(String.format("Found digits: %s", digits));
     }
 
     private void searchFieldLine() {

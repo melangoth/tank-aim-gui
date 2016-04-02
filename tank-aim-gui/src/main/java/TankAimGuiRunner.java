@@ -1,5 +1,7 @@
 import org.apache.log4j.Logger;
 
+import javax.swing.*;
+
 /**
  * Created by develrage
  */
@@ -29,8 +31,8 @@ public class TankAimGuiRunner {
 
         screenerThread.start();
         analizerThread.start();
-//        SwingUtilities.invokeLater(new Win());
-//        guiRefresherThread.start();
+        SwingUtilities.invokeLater(new Win());
+        guiRefresherThread.start();
     }
 
     // todo use capture on-demand from Analyser, do not capture continously
