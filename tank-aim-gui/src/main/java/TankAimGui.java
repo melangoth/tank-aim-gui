@@ -188,8 +188,10 @@ class TankAimGui extends JPanel {
         for (Tank tank : tanks) {
             g.setColor(tank.getColor());
             tank.paintSprite(g);
-            for (int[] t : tank.getTrajectoryBlocks()) {
-                g.fillOval(t[0], t[1], t[2], t[3]);
+            if (Analyser.getInstance().getActiveTank() == tank) {
+                for (int[] t : tank.getTrajectoryBlocks()) {
+                    g.fillOval(t[0], t[1], t[2], t[3]);
+                }
             }
         }
     }
