@@ -23,11 +23,14 @@ public class Analyser extends AnalyserMathTools implements Runnable {
 
     private Analyser() {
         log.trace("Analyser()");
+
+        // init
         p1Tank = new Tank(Color.GREEN, "P1Tank");
         p2Tank = new Tank(Color.ORANGE, "P2Tank");
         activeTank = p1Tank;
         fieldLineBlocks = new ArrayList<>();
         tracerBlocks = new ArrayList<>();
+        loadImagePool();
     }
 
     public static Analyser getInstance() {
@@ -51,7 +54,6 @@ public class Analyser extends AnalyserMathTools implements Runnable {
         while (true) {
             try {
                 log.trace("Analyser hearthbeat.");
-//                loadImagePool();
                 loadImageCaptured();
                 fullAnalysation();
                 Thread.sleep(200);
