@@ -11,15 +11,15 @@ import java.io.File;
 public class Screener extends SikulixFrame implements Runnable {
     final static Logger log = Logger.getLogger(Screener.class);
     private static Screener instance = null;
-    @SuppressWarnings("FieldCanBeLocal")
-    private final float defSimilarity = 0.7f;
     private final Pattern indicator;
     private final Object captureLock = new Object();
     private final Object regionLock = new Object();
     private Rectangle rField = null;
     private Rectangle rPower = null;
     private Rectangle rAngle = null;
-    private BufferedImage imageCaptured = null;
+    private BufferedImage fieldCaptured = null;
+    private BufferedImage angleCaptured = null;
+    private BufferedImage powerCaptured = null;
 
     private Screener() {
         File f = new File("images");
@@ -44,7 +44,9 @@ public class Screener extends SikulixFrame implements Runnable {
         while (true) {
             try {
                 log.trace("Screener hearthbeat.");
-                captureRegion();
+                captureRegion(rField, fieldCaptured);
+                captureRegion(rAngle, angleCaptured);
+                captureRegion(rPower, powerCaptured);
                 Thread.sleep(200);
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
@@ -52,25 +54,36 @@ public class Screener extends SikulixFrame implements Runnable {
         }
     }
 
-    public synchronized BufferedImage getImageCaptured() {
+    public synchronized BufferedImage getFieldCaptured() {
         synchronized (captureLock) {
-            return imageCaptured;
+            return fieldCaptured;
         }
     }
 
-    public synchronized void captureRegion() {
-        log.debug("Capturing regions.");
+    public synchronized BufferedImage getAngleCaptured() {
+        synchronized (captureLock) {
+            return angleCaptured;
+        }
+    }
+
+    public synchronized BufferedImage getPowerCaptured() {
+        synchronized (captureLock) {
+            return powerCaptured;
+        }
+    }
+
+    public synchronized void captureRegion(Rectangle rect, BufferedImage img) {
+        log.debug("Capturing region.");
 
         try {
             synchronized (regionLock) {
-                for (Rectangle r : new Rectangle[]{rField, rAngle, rPower})
-                    if (r != null) {
-                        synchronized (captureLock) {
-                            imageCaptured = new Robot().createScreenCapture(r);
-                        }
-                    } else {
-                        log.warn("No screen region defined.");
+                if (rect != null) {
+                    synchronized (captureLock) {
+                        img = new Robot().createScreenCapture(rect);
                     }
+                } else {
+                    log.warn("No screen region defined.");
+                }
             }
         } catch (AWTException e) {
             log.error("Error capturing screen.");
@@ -83,6 +96,7 @@ public class Screener extends SikulixFrame implements Runnable {
             log.info("Searching app on Screen#" + s);
             Region screen = new Region((new Screen(s)).getBounds());
 
+            float defSimilarity = 0.7f;
             Match ind = waitMatch(screen, indicator.similar(defSimilarity), 5);
 
             if (ind == null) {

@@ -43,7 +43,7 @@ public class AnalyserImageTools {
     }
 
     public synchronized void loadImageCaptured() {
-        BufferedImage img = Screener.getInstance().getImageCaptured();
+        BufferedImage img = Screener.getInstance().getFieldCaptured();
         if (img != null) {
             loadImage(img);
         } else {
