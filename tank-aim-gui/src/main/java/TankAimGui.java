@@ -14,7 +14,7 @@ class TankAimGui extends JPanel {
     final static Logger log = Logger.getLogger(TankAimGui.class);
     // Global
     private static final int MLINE_BASELINEOFFSET = 3;
-    private static final int MLINE_FIRSTLINE = 10;
+    private static final int MLINE_FIRSTLINE = 5;
     private static final int INTERACT_MARGIN_TOP = 45;
     private static final int INTERACT_MARGIN_BOTTOM = 5;
     private static final int INTERACT_MARGIN_LEFT = 5;
@@ -22,29 +22,36 @@ class TankAimGui extends JPanel {
     private static TankAimGui instance = null;
 
     // Menu buttons
-    // todo rewrite to be able to stack menuitems, make them relative to each other
     ArrayList<MenuItem> menuItems = new ArrayList<>();
-    MenuItem tankSwitch = new MenuItem(new Rectangle(180, MLINE_FIRSTLINE, 50, 20), 2, MLINE_BASELINEOFFSET);
-    MenuItem changeImageButton = new MenuItem(new Rectangle(240, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "Chng Img");
-    MenuItem decPower = new MenuItem(new Rectangle(460, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
-    MenuItem showPower = new MenuItem(new Rectangle(475, MLINE_FIRSTLINE, 35, 20), 2, MLINE_BASELINEOFFSET, "");
-    MenuItem incPower = new MenuItem(new Rectangle(510, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
-    MenuItem decAngle = new MenuItem(new Rectangle(535, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
-    MenuItem showAngle = new MenuItem(new Rectangle(550, MLINE_FIRSTLINE, 35, 20), 2, MLINE_BASELINEOFFSET, "");
-    MenuItem incAngle = new MenuItem(new Rectangle(585, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
+    MenuItem tankSwitch;
+    MenuItem changeImageButton;
+    MenuItem decPower;
+    MenuItem showPower;
+    MenuItem incPower;
+    MenuItem decAngle;
+    MenuItem showAngle;
+    MenuItem incAngle;
 
     private TankAimGui() {
         setBorder(BorderFactory.createLineBorder(Color.black));
 
         // initialization
-        menuItems.add(tankSwitch);
-        menuItems.add(decPower);
-        menuItems.add(showPower);
-        menuItems.add(incPower);
-        menuItems.add(decAngle);
-        menuItems.add(showAngle);
-        menuItems.add(incAngle);
+        changeImageButton = new MenuItem(new Rectangle(130, MLINE_FIRSTLINE, 75, 20), 2, MLINE_BASELINEOFFSET, "Chng Img");
         menuItems.add(changeImageButton);
+        tankSwitch = new MenuItem(new Rectangle(rightOf(changeImageButton), MLINE_FIRSTLINE, 50, 20), 2, MLINE_BASELINEOFFSET);
+        menuItems.add(tankSwitch);
+        decPower = new MenuItem(new Rectangle(500, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
+        menuItems.add(decPower);
+        showPower = new MenuItem(new Rectangle(rightOf(decPower, 0), MLINE_FIRSTLINE, 35, 20), 2, MLINE_BASELINEOFFSET, "");
+        menuItems.add(showPower);
+        incPower = new MenuItem(new Rectangle(rightOf(showPower, 0), MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
+        menuItems.add(incPower);
+        decAngle = new MenuItem(new Rectangle(rightOf(incPower), MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " -");
+        menuItems.add(decAngle);
+        showAngle = new MenuItem(new Rectangle(rightOf(decAngle, 0), MLINE_FIRSTLINE, 35, 20), 2, MLINE_BASELINEOFFSET, "");
+        menuItems.add(showAngle);
+        incAngle = new MenuItem(new Rectangle(rightOf(showAngle, 0), MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
+        menuItems.add(incAngle);
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -114,6 +121,14 @@ class TankAimGui extends JPanel {
         }
 
         return instance;
+    }
+
+    private int rightOf(MenuItem relative) {
+        return rightOf(relative, 10);
+    }
+
+    private int rightOf(MenuItem relative, int distance) {
+        return relative.getX() + relative.getWidth() + distance;
     }
 
     private void switchTank() {
