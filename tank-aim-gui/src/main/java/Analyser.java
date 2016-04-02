@@ -1,6 +1,8 @@
+import com.develrage.birdocr.Recognition;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -20,11 +22,17 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     private Tank activeTank;
     private int angle = 45;
     private int power = 75;
+    private Recognition rec = null;
 
     private Analyser() {
         log.trace("Analyser()");
 
         // init
+        try {
+            rec = new Recognition(Recognition.OcrMap.TANK, "images/TANK.json");
+        } catch (IOException e) {
+            log.error("Failed to load OcrMap!");
+        }
         p1Tank = new Tank(Color.GREEN, "P1Tank");
         p2Tank = new Tank(Color.ORANGE, "P2Tank");
         activeTank = p1Tank;
@@ -64,10 +72,15 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     }
 
     private synchronized void fullAnalysation() {
+        readAimValues();
         searchFieldLine();
         searchTank(p1Tank);
         calculateTrajectory(p1Tank);
         calculateTrajectory(p2Tank);
+    }
+
+    private void readAimValues() {
+        log.debug("Reading aim values...");
     }
 
     private void searchFieldLine() {
