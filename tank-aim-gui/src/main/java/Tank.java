@@ -5,8 +5,8 @@ import java.awt.*;
  */
 class Tank extends AnalyserMathTools {
     private String name;
-    private int xPos = 50;
-    private int yPos = 50;
+    private int xPos = 400;
+    private int yPos = 100;
     private int width = 15;
     private int height = 15;
     private Color color;

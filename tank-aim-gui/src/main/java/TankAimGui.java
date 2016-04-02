@@ -32,9 +32,6 @@ class TankAimGui extends JPanel {
     MenuItem showAngle = new MenuItem(new Rectangle(550, MLINE_FIRSTLINE, 35, 20), 2, MLINE_BASELINEOFFSET, "");
     MenuItem incAngle = new MenuItem(new Rectangle(585, MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
 
-    // GUI
-    private Tank activeTank;
-
     private TankAimGui() {
         setBorder(BorderFactory.createLineBorder(Color.black));
 
@@ -50,16 +47,11 @@ class TankAimGui extends JPanel {
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
+                // todo: remove analyser def., extract all code to separate methods
                 Analyser analyser = Analyser.getInstance();
                 if (e.getY() < INTERACT_MARGIN_TOP) {
                     if (tankSwitch.inside(e)) {
-                        if (activeTank == analyser.getP1Tank()) {
-                            activeTank = analyser.getP2Tank();
-                        } else {
-                            activeTank = analyser.getP1Tank();
-                        }
-                        tankSwitch.setColor(activeTank.getColor());
-                        tankSwitch.setText(activeTank.getName());
+                        switchTank();
                     } else if (decPower.inside(e)) {
                         int power = analyser.getPower();
                         if (power <= 0) {
@@ -96,8 +88,7 @@ class TankAimGui extends JPanel {
                         analyser.loadImagePool(true);
                     }
                 } else {
-                    //moveTank(activeTank, e.getX(), e.getY());
-                    log.warn("Review this method: moveTank()");
+                    moveTank(e);
                 }
             }
         });
@@ -105,14 +96,13 @@ class TankAimGui extends JPanel {
         addMouseMotionListener(new MouseAdapter() {
             public void mouseDragged(MouseEvent e) {
                 if (e.getY() > INTERACT_MARGIN_TOP) {
-                    //moveTank(activeTank, e.getX(), e.getY());
-                    log.warn("Review this method: moveTank()");
+                    moveTank(e);
                 }
             }
         });
 
         // initialization
-        activeTank = Analyser.getInstance().getP1Tank();
+        Tank activeTank = Analyser.getInstance().getActiveTank();
         tankSwitch.setColor(activeTank.getColor());
         tankSwitch.setText(activeTank.getName());
     }
@@ -125,11 +115,23 @@ class TankAimGui extends JPanel {
         return instance;
     }
 
-    // todo revrite to be compatible with separated Analyser
-    @SuppressWarnings("unused")
-    private void moveTank(Tank tank, int x, int y) {
-        // repaint only if moved
-        if ((tank.getCenterX() != x) || (tank.getCenterY() != y)) {
+    private void switchTank() {
+        Analyser analyser = Analyser.getInstance();
+        analyser.switchActiveTank();
+        tankSwitch.setColor(analyser.getActiveTank().getColor());
+        tankSwitch.setText(analyser.getActiveTank().getName());
+    }
+
+    private void moveTank(MouseEvent event) {
+        int x = event.getX();
+        int y = event.getY();
+        Analyser analyser = Analyser.getInstance();
+        Tank tank = analyser.getActiveTank();
+        log.debug(String.format("Active tank is: %s", tank.getName()));
+
+        // repaint only if moved, and if secondary tank is active
+        if (tank.getName().equals("P2Tank") &&
+                ((tank.getCenterX() != x) || (tank.getCenterY() != y))) {
             // limit right
             int xx = Math.min(
                     this.getWidth() - INTERACT_MARGIN_RIGHT - tank.getWidth() / 2,
@@ -161,7 +163,7 @@ class TankAimGui extends JPanel {
         drawBackground(g);
 
         // Draw tracer blocks
-        drawTracerBlocks(g);
+//        drawTracerBlocks(g);
 
         // Draw buttons
         drawButtons(g);
@@ -185,7 +187,7 @@ class TankAimGui extends JPanel {
     }
 
     private void drawTrajectory(Graphics g) {
-        g.setColor(activeTank.getColor());
+        g.setColor(Analyser.getInstance().getActiveTank().getColor());
         for (int[] t : Analyser.getInstance().getTrajectoryBlocks()) {
             g.fillOval(t[0], t[1], t[2], t[3]);
         }

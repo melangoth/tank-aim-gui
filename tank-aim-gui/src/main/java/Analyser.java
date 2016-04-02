@@ -17,6 +17,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     private ArrayList<int[]> fieldLineBlocks = new ArrayList<>();
     private Tank p1Tank = new Tank(Color.GREEN, "P1Tank");
     private Tank p2Tank = new Tank(Color.ORANGE, "P2Tank");
+    private Tank activeTank = p1Tank;
     private ArrayList<int[]> trajectoryBlocks = new ArrayList<>();
     private ArrayList<int[]> tracerBlocks = new ArrayList<>();
     private int angle = 45;
@@ -250,6 +251,22 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     public synchronized ArrayList<int[]> getTracerBlocks() {
         synchronized (tracerLock) {
             return tracerBlocks;
+        }
+    }
+
+    public synchronized Tank getActiveTank() {
+        synchronized (tankLock) {
+            return activeTank;
+        }
+    }
+
+    public synchronized void switchActiveTank() {
+        synchronized (tankLock) {
+            if (activeTank == p1Tank) {
+                activeTank = p2Tank;
+            } else {
+                activeTank = p1Tank;
+            }
         }
     }
 }
