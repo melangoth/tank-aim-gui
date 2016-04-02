@@ -55,45 +55,19 @@ class TankAimGui extends JPanel {
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                // todo: remove analyser def., extract all code to separate methods
-                Analyser analyser = Analyser.getInstance();
                 if (e.getY() < INTERACT_MARGIN_TOP) {
                     if (tankSwitch.inside(e)) {
                         switchTank();
                     } else if (decPower.inside(e)) {
-                        int power = analyser.getPower();
-                        if (power <= 0) {
-                            power = 100;
-                        } else {
-                            power--;
-                        }
-                        analyser.setPower(power);
+                        decrementPower();
                     } else if (incPower.inside(e)) {
-                        int power = analyser.getPower();
-                        if (power >= 100) {
-                            power = 0;
-                        } else {
-                            power++;
-                        }
-                        analyser.setPower(power);
+                        incrementPower();
                     } else if (decAngle.inside(e)) {
-                        int angle = analyser.getAngle();
-                        if (angle <= 0) {
-                            angle = 359;
-                        } else {
-                            angle--;
-                        }
-                        analyser.setAngle(angle);
+                        decrementAngle();
                     } else if (incAngle.inside(e)) {
-                        int angle = analyser.getAngle();
-                        if (angle >= 359) {
-                            angle = 0;
-                        } else {
-                            angle++;
-                        }
-                        analyser.setAngle(angle);
+                        incrementAngle();
                     } else if (changeImageButton.inside(e)) {
-                        analyser.loadImagePool(true);
+                        changeImage();
                     }
                 } else {
                     moveTank(e);
@@ -121,6 +95,55 @@ class TankAimGui extends JPanel {
         }
 
         return instance;
+    }
+
+    private void changeImage() {
+        Analyser analyser = Analyser.getInstance();
+        analyser.loadImagePool(true);
+    }
+
+    private void incrementAngle() {
+        Analyser analyser = Analyser.getInstance();
+        int angle = analyser.getAngle();
+        if (angle >= 359) {
+            angle = 0;
+        } else {
+            angle++;
+        }
+        analyser.setAngle(angle);
+    }
+
+    private void decrementAngle() {
+        Analyser analyser = Analyser.getInstance();
+        int angle = analyser.getAngle();
+        if (angle <= 0) {
+            angle = 359;
+        } else {
+            angle--;
+        }
+        analyser.setAngle(angle);
+    }
+
+    private void incrementPower() {
+        Analyser analyser = Analyser.getInstance();
+        int power = analyser.getPower();
+        if (power >= 100) {
+            power = 0;
+        } else {
+            power++;
+        }
+        analyser.setPower(power);
+    }
+
+    private void decrementPower() {
+        Analyser analyser = Analyser.getInstance();
+        int power = analyser.getPower();
+        if (power <= 0) {
+            power = 100;
+        } else {
+            power--;
+        }
+        analyser.setPower(power);
     }
 
     private int rightOf(MenuItem relative) {
