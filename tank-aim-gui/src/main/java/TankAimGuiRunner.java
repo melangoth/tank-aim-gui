@@ -37,6 +37,5 @@ public class TankAimGuiRunner {
 
     // todo use capture on-demand from Analyser, do not capture continously
     // todo make greenTank auto-search, make red-tank manual-search, switch also trajectory
-    // todo implement realtime screen capturing
     // todo Wind: wind=x; power=max; angle= angle +/- (x/2/10)
 }

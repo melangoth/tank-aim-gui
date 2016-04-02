@@ -16,7 +16,7 @@ public class AnalyserImageTools {
     protected int imageWidth;
     protected int imageHeight;
     protected String[] imagePool = new String[]{"images/img5.png", "images/img6.png", "images/img7.png", "images/img8.png"};
-    protected int imagePoolPointer = 0;
+    protected int imagePoolPointer = 1;
 
     public synchronized void loadImage(BufferedImage image) {
         log.trace("loadImage(BufferedImage image)");
