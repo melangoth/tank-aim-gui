@@ -14,6 +14,9 @@ public class TankAimGuiRunner {
 
         Thread guiRefresherThread = new Thread(new Runnable() {
             public void run() {
+
+                SwingUtilities.invokeLater(new Win());
+
                 //noinspection InfiniteLoopStatement
                 while (true) {
                     try {
@@ -29,9 +32,8 @@ public class TankAimGuiRunner {
         Screener scr = Screener.getInstance();
         Thread screenerThread = new Thread(scr);
 
-        screenerThread.start();
+//        screenerThread.start();
         analizerThread.start();
-        SwingUtilities.invokeLater(new Win());
         guiRefresherThread.start();
     }
 
