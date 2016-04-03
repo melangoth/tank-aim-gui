@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by develrage
@@ -16,6 +17,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     private final Object tracerLock = new Object();
     private final Object fieldLineLock = new Object();
     private final Object tankLock = new Object();
+    private final Object upsLock = new Object();
     // todo repalce ints with Rectangle, or something more useful
     private ArrayList<int[]> fieldLineBlocks;
     private ArrayList<int[]> tracerBlocks;
@@ -26,6 +28,9 @@ public class Analyser extends AnalyserMathTools implements Runnable {
     private int power = 75;
     private Recognition powerRecognizer = null;
     private Recognition angleRecognizer = null;
+    // UPS monitor
+    private ArrayList<Long> workMillis = new ArrayList<>();
+    private double ups;
 
     private Analyser() {
         log.trace("Analyser()");
@@ -68,6 +73,13 @@ public class Analyser extends AnalyserMathTools implements Runnable {
                 log.trace("Analyser hearthbeat.");
                 loadImageCaptured();
                 fullAnalysation();
+
+                // Refresh UPS monitor
+                workMillis.add(new Date().getTime());
+                if (workMillis.size() > 10) {
+                    calcUPSAvg();
+                }
+
                 Thread.sleep(200);
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
@@ -319,6 +331,25 @@ public class Analyser extends AnalyserMathTools implements Runnable {
             } else {
                 activeTank = p1Tank;
             }
+        }
+    }
+
+    private void calcUPSAvg() {
+        double sum = 0;
+        for (int i = workMillis.size() - 1; i >= 1; i--) {
+            sum += workMillis.get(i) - workMillis.get(i - 1);
+        }
+        sum /= (workMillis.size() - 1);
+        synchronized (upsLock) {
+            ups = 1000 / sum;
+            log.info(String.format("Calculating UPS (%d): %f", workMillis.size(), ups));
+        }
+        workMillis.remove(0);
+    }
+
+    public double getUPS() {
+        synchronized (upsLock) {
+            return ups;
         }
     }
 }
