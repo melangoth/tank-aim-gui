@@ -37,9 +37,9 @@ public class TankAimGuiRunner {
         guiRefresherThread.start();
     }
 
+    // todo use capture on-demand from Analyser, do not capture continously, only do relocation on Screener thread
     // todo add button to disable auto aim (reading realtime aim values)
     // todo add button to relocate window
     // todo improve tank search (main problem: drops)
-    // todo use capture on-demand from Analyser, do not capture continously
     // todo Wind: wind=x; power=max; angle= angle +/- (x/2/10)
 }
