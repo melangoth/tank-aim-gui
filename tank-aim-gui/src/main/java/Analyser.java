@@ -80,7 +80,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
                     calcUPSAvg();
                 }
 
-                Thread.sleep(10);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
             }

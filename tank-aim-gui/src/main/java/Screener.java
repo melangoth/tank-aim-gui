@@ -67,7 +67,7 @@ public class Screener extends SikulixFrame implements Runnable {
                     calcUPSAvg();
                 }
 
-                Thread.sleep(200);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
             }

@@ -21,7 +21,7 @@ public class TankAimGuiRunner {
                 while (true) {
                     try {
                         TankAimGui.getInstance().repaint();
-                        Thread.sleep(100);
+                        Thread.sleep(50);
                     } catch (InterruptedException e) {
                         log.warn("Thread sleep interrupted.", e);
                     }
