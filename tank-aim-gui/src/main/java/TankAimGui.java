@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by develrage
@@ -20,7 +21,6 @@ class TankAimGui extends JPanel {
     private static final int INTERACT_MARGIN_LEFT = 5;
     private static final int INTERACT_MARGIN_RIGHT = 5;
     private static TankAimGui instance = null;
-
     // Menu buttons
     ArrayList<MenuItem> menuItems = new ArrayList<>();
     MenuItem tankSwitch;
@@ -31,6 +31,11 @@ class TankAimGui extends JPanel {
     MenuItem decAngle;
     MenuItem showAngle;
     MenuItem incAngle;
+    MenuItem upsMonitor;
+    // UPS monitor
+    private ArrayList<Long> workMillis = new ArrayList<>();
+    private double ups;
+    private long upsLastShown = 0;
 
     private TankAimGui() {
         setBorder(BorderFactory.createLineBorder(Color.black));
@@ -52,6 +57,8 @@ class TankAimGui extends JPanel {
         menuItems.add(showAngle);
         incAngle = new MenuItem(new Rectangle(rightOf(showAngle, 0), MLINE_FIRSTLINE, 15, 20), 2, MLINE_BASELINEOFFSET, " +");
         menuItems.add(incAngle);
+        upsMonitor = new MenuItem(new Rectangle(changeImageButton.getX(), MLINE_FIRSTLINE + changeImageButton.getHeight() + 5, 150, 20), 2, MLINE_BASELINEOFFSET, "g/a/s: ");
+        menuItems.add(upsMonitor);
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -215,6 +222,33 @@ class TankAimGui extends JPanel {
 
         // Draw Tanks
         drawTanks(g);
+
+        // Refresh UPS monitor
+        showUPS();
+        if (workMillis.size() > 10) {
+            calcUPSAvg();
+        }
+    }
+
+    private void showUPS() {
+        long now = new Date().getTime();
+        workMillis.add(now);
+
+        if (now - upsLastShown >= 1000) {
+            upsLastShown = now;
+            upsMonitor.setText(String.format("gas: %.1f", ups));
+        }
+    }
+
+    private void calcUPSAvg() {
+        double sum = 0;
+        for (int i = workMillis.size() - 1; i >= 1; i--) {
+            sum += workMillis.get(i) - workMillis.get(i - 1);
+        }
+        sum /= (workMillis.size() - 1);
+        ups = 1000 / sum;
+//        log.info(String.format("Calculating UPS (%d): %f", workMillis.size(), ups));
+        workMillis.remove(0);
     }
 
     private void drawAimCaptures(Graphics g) {

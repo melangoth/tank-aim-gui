@@ -13,7 +13,7 @@ public class Win implements Runnable {
                 SwingUtilities.isEventDispatchThread());
         JFrame frame = new JFrame("Tank Aim GUI");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setLocation(200, 200);
+        frame.setLocation(200, 50);
         frame.add(TankAimGui.getInstance());
         frame.pack();
         frame.setVisible(true);
