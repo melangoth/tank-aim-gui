@@ -44,22 +44,12 @@ public class Screener extends SikulixFrame implements Runnable {
 
     public void run() {
         log.debug("run()");
-        findRegion();
 
         //noinspection InfiniteLoopStatement
         while (true) {
             try {
                 log.trace("Screener hearthbeat.");
-
-                synchronized (captureLock) {
-                    fieldCaptured = captureRegion(rField);
-                }
-                synchronized (captureLock) {
-                    angleCaptured = captureRegion(rAngle);
-                }
-                synchronized (captureLock) {
-                    powerCaptured = captureRegion(rPower);
-                }
+                findRegion();
 
                 // Refresh UPS monitor
                 workMillis.add(new Date().getTime());
@@ -67,10 +57,22 @@ public class Screener extends SikulixFrame implements Runnable {
                     calcUPSAvg();
                 }
 
-                Thread.sleep(100);
+                Thread.sleep(250);
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
             }
+        }
+    }
+
+    public synchronized void captureScreenRegions() {
+        synchronized (captureLock) {
+            fieldCaptured = captureRegion(rField);
+        }
+        synchronized (captureLock) {
+            angleCaptured = captureRegion(rAngle);
+        }
+        synchronized (captureLock) {
+            powerCaptured = captureRegion(rPower);
         }
     }
 
@@ -92,7 +94,7 @@ public class Screener extends SikulixFrame implements Runnable {
         }
     }
 
-    public synchronized BufferedImage captureRegion(Rectangle rect) {
+    private BufferedImage captureRegion(Rectangle rect) {
         log.trace("Capturing region.");
         BufferedImage img = null;
 
@@ -108,20 +110,20 @@ public class Screener extends SikulixFrame implements Runnable {
         return img;
     }
 
-    public synchronized void findRegion() {
+    private void findRegion() {
         for (int s = Screen.getNumberScreens() - 1; s >= 0; s--) {
-            log.info("Searching app on Screen#" + s);
+            log.trace("Searching app on Screen#" + s);
             Region screen = new Region((new Screen(s)).getBounds());
 
             float defSimilarity = 0.7f;
             Match ind = waitMatch(screen, indicator.similar(defSimilarity), 5);
 
             if (ind == null) {
-                log.info("Title not found on Screen " + s);
+                log.error("Title not found on Screen " + s);
                 continue;
             }
 
-            log.info("Indicator found.");
+            log.debug("Indicator found.");
 
             synchronized (regionLock) {
                 rField = new Rectangle(ind.getX() + 4,

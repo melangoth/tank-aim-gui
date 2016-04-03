@@ -71,6 +71,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
         while (true) {
             try {
                 log.trace("Analyser hearthbeat.");
+                Screener.getInstance().captureScreenRegions();
                 loadImageCaptured();
                 fullAnalysation();
 
