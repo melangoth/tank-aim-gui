@@ -4,6 +4,8 @@ import org.sikuli.script.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by develrage
@@ -14,12 +16,16 @@ public class Screener extends SikulixFrame implements Runnable {
     private final Pattern indicator;
     private final Object captureLock = new Object();
     private final Object regionLock = new Object();
+    private final Object upsLock = new Object();
     private Rectangle rField = null;
     private Rectangle rPower = null;
     private Rectangle rAngle = null;
     private BufferedImage fieldCaptured = null;
     private BufferedImage angleCaptured = null;
     private BufferedImage powerCaptured = null;
+    // UPS monitor
+    private ArrayList<Long> workMillis = new ArrayList<>();
+    private double ups;
 
     private Screener() {
         File f = new File("images");
@@ -54,6 +60,13 @@ public class Screener extends SikulixFrame implements Runnable {
                 synchronized (captureLock) {
                     powerCaptured = captureRegion(rPower);
                 }
+
+                // Refresh UPS monitor
+                workMillis.add(new Date().getTime());
+                if (workMillis.size() > 10) {
+                    calcUPSAvg();
+                }
+
                 Thread.sleep(200);
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
@@ -125,6 +138,25 @@ public class Screener extends SikulixFrame implements Runnable {
 //            new Region(rAngle).highlight(3);
 
             break;
+        }
+    }
+
+    private void calcUPSAvg() {
+        double sum = 0;
+        for (int i = workMillis.size() - 1; i >= 1; i--) {
+            sum += workMillis.get(i) - workMillis.get(i - 1);
+        }
+        sum /= (workMillis.size() - 1);
+        synchronized (upsLock) {
+            ups = 1000 / sum;
+//            log.info(String.format("Calculating UPS (%d): %f", workMillis.size(), ups));
+        }
+        workMillis.remove(0);
+    }
+
+    public double getUPS() {
+        synchronized (upsLock) {
+            return ups;
         }
     }
 }

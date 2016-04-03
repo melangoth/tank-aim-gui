@@ -80,7 +80,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
                     calcUPSAvg();
                 }
 
-                Thread.sleep(200);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 log.warn("Sleep interrupted.", e);
             }
@@ -342,7 +342,7 @@ public class Analyser extends AnalyserMathTools implements Runnable {
         sum /= (workMillis.size() - 1);
         synchronized (upsLock) {
             ups = 1000 / sum;
-            log.info(String.format("Calculating UPS (%d): %f", workMillis.size(), ups));
+//            log.info(String.format("Calculating UPS (%d): %f", workMillis.size(), ups));
         }
         workMillis.remove(0);
     }

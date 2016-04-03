@@ -234,12 +234,13 @@ class TankAimGui extends JPanel {
         long now = new Date().getTime();
         workMillis.add(now);
 
-        if (now - upsLastShown >= 1000) {
+        if (now - upsLastShown >= 2000) {
             upsLastShown = now;
 
             // get UPS values
             double analyserUPS = Analyser.getInstance().getUPS();
-            upsMonitor.setText(String.format("gas: %.1f / %.1f", ups, analyserUPS));
+            double screenerUPS = Screener.getInstance().getUPS();
+            upsMonitor.setText(String.format("gas: %.1f / %.1f / %.1f", ups, analyserUPS, screenerUPS));
         }
     }
 
