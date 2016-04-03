@@ -32,7 +32,7 @@ public class TankAimGuiRunner {
         Screener scr = Screener.getInstance();
         Thread screenerThread = new Thread(scr);
 
-//        screenerThread.start();
+        screenerThread.start();
         analizerThread.start();
         guiRefresherThread.start();
     }
