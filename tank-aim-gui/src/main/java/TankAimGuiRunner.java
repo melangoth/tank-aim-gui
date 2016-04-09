@@ -37,6 +37,7 @@ public class TankAimGuiRunner {
         guiRefresherThread.start();
     }
 
+    // todo move indicator and map jsons to resources
     // todo add button to disable auto aim (reading realtime aim values)
     // todo add button to relocate window
     // todo improve tank search (main problem: drops)
