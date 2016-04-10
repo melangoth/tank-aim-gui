@@ -23,7 +23,7 @@
         <dependency>
             <groupId>com.develrage.publictools</groupId>
             <artifactId>tools-bird-ocr</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.7-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -39,6 +39,41 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+
+        <plugins>
+            <!-- executable jar with dependencies -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4.1</version>
+                <configuration>
+                    <finalName>TankAimBot</finalName>
+                    <formats>
+                        <format>jar</format>
+                    </formats>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <attach>false</attach>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>TankAimGuiRunner</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
 </project>
