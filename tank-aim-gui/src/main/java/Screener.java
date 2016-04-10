@@ -29,7 +29,8 @@ public class Screener extends SikulixFrame implements Runnable {
 
     private Screener() {
         File f = new File("images");
-        ImagePath.add(f.getAbsolutePath());
+        ImagePath.add(f.getAbsolutePath()); // from IDE, for indicator and static backgrounds
+        ImagePath.add("Screener/imgs"); // from executable jar, for indicator
         SikulixFrame.setImagePaths();
         indicator = new Pattern("indicator.png");
     }

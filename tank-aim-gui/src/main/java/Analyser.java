@@ -37,8 +37,9 @@ public class Analyser extends AnalyserMathTools implements Runnable {
 
         // init
         try {
-            powerRecognizer = new Recognition(Recognition.OcrMap.TANKP, "images/TANKP.json");
-            angleRecognizer = new Recognition(Recognition.OcrMap.TANKA, "images/TANKA.json");
+            log.info("Loading ocr maps...");
+            powerRecognizer = new Recognition(Recognition.OcrMap.TANKP, "classpath://Screener/ocrmaps/TANKP.json");
+            angleRecognizer = new Recognition(Recognition.OcrMap.TANKA, "classpath://Screener/ocrmaps/TANKA.json");
         } catch (IOException e) {
             log.error("Failed to load OcrMap!");
         }
