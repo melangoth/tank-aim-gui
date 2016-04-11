@@ -1,4 +1,3 @@
-import com.develrage.birdocr.DigitMap;
 import com.develrage.birdocr.Recognition;
 import org.apache.log4j.Logger;
 
@@ -106,10 +105,8 @@ public class Analyser extends AnalyserMathTools implements Runnable {
 
         // todo NegativeArraySizeException on blank captures
         if (angle != null) {
-            for (DigitMap map : angleRecognizer.extractDigitMapsFromImage(angle)) {
-                int digit = angleRecognizer.getDigitCollection().findDigit(map);
-                digits += Integer.toString(digit);
-            }
+            digits = angleRecognizer.getRecognisedStringFromImage(angle);
+
             try {
                 this.angle = Integer.parseInt(digits);
             } catch (NumberFormatException e) {
@@ -122,10 +119,8 @@ public class Analyser extends AnalyserMathTools implements Runnable {
         }
 
         if (power != null) {
-            for (DigitMap map : powerRecognizer.extractDigitMapsFromImage(power)) {
-                int digit = powerRecognizer.getDigitCollection().findDigit(map);
-                digits += Integer.toString(digit);
-            }
+            digits = powerRecognizer.getRecognisedStringFromImage(power);
+
             try {
                 this.power = Integer.parseInt(digits);
             } catch (NumberFormatException e) {

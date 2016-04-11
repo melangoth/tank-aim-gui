@@ -23,7 +23,7 @@
         <dependency>
             <groupId>com.develrage.publictools</groupId>
             <artifactId>tools-bird-ocr</artifactId>
-            <version>1.7-SNAPSHOT</version>
+            <version>1.8-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
